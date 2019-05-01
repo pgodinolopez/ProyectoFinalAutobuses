@@ -1,0 +1,39 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>verRutas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-item>
+    <ion-label position="floating">Origen</ion-label>
+    <ion-input [(ngModel)]="origen"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="floating">Destino</ion-label>
+    <ion-input [(ngModel)]="destino"></ion-input>
+  </ion-item>
+
+  <ion-button (click)="buscarRutas()" color="primary">Buscar</ion-button>
+
+  <ion-card *ngFor="let horario of horarios">
+    <!-- <ion-card-header>
+        <ion-card-subtitle>Card Subtitle</ion-card-subtitle>
+        <ion-card-title>Card Title</ion-card-title>
+      </ion-card-header> -->
+
+    <ion-card-content>
+      <ion-item lines="none">
+        <ion-label>Id línea: {{horario.idlinea}}</ion-label>
+        <ion-label>
+          {{horario.horaSalida}}
+          <br>
+          {{horario.horaLlegada}}
+        </ion-label>
+
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
