@@ -2,11 +2,17 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Horario } from '../modelos/horario';
 import { Linea } from '../modelos/linea';
+import { Municipio } from '../modelos/municipio';
+import { Nucleo } from '../modelos/nucleo';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RutasService {
+  
+  // 1: http://api.ctan.es/v1/Consorcios/7/municipios/
+  // 2: Líneas por municipio y por modo (autobús) http://api.ctan.es/v1/Consorcios/7/municipios/10/lineas?idModo=1
+  // 3: Núcleos de un municipio http://api.ctan.es/v1/Consorcios/7/municipios/10/nucleos
 
   origen: string = '';
   destino: string = '';
@@ -25,6 +31,18 @@ export class RutasService {
 
   setDestino(destino: string) {
     this.destino = destino;
+  }
+
+  getMunicipios() {
+    return this.http.get<Municipio[]>(this.url_base + '/municipios/');
+  }
+
+  getNucleosporMunicipio(idMunicipio: number) {
+    return this.http.get<Nucleo[]>(this.url_base + '/municipios/' + idMunicipio + '/nucleos');
+  }
+
+  getLineasPorMunicipio() {
+
   }
 
   getHorarios() {

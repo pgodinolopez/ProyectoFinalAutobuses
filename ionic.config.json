@@ -1,5 +1,7 @@
 {
   "name": "ProyectoFinalAutobuses",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular"
 }

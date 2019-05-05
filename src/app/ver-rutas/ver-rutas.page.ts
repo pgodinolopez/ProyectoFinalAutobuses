@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { Horario } from '../modelos/horario';
 import { RutasService } from '../servicios/rutas.service';
 import { Linea } from '../modelos/linea';
-import { homedir } from 'os';
+import { Municipio } from '../modelos/municipio';
+import { Nucleo } from '../modelos/nucleo';
+
 
 @Component({
   selector: 'app-ver-rutas',
@@ -11,15 +13,18 @@ import { homedir } from 'os';
 })
 export class VerRutasPage implements OnInit {
 
+  municipios: Municipio[];
+  nucleos: Nucleo[];
   horarios: Horario[];
   origen: string = '';
   destino: string = '';
   linea: Linea;
+  municipioOrigen: Municipio;
 
   constructor(private rutasService: RutasService) { }
 
   ngOnInit() {
-  
+    this.obtenerMunicipios();
   }
 
   obtenerHorarios() {
@@ -37,9 +42,15 @@ export class VerRutasPage implements OnInit {
   }
 
   buscarRutas() {
-    this.rutasService.setOrigen(this.origen);
-    this.rutasService.setDestino(this.destino);
-    this.rutasService.construirUrl();
+    this.municipioOrigen = this.municipios.find(i => i.datos === this.origen);
+    this.obtenerNucleosPorMunicipio();
+
+    
+    console.log(this.municipioOrigen);
+
+    // this.rutasService.setOrigen(this.origen);
+    // this.rutasService.setDestino(this.destino);
+    // this.rutasService.construirUrl();
     this.obtenerHorarios();
   }
 
@@ -48,6 +59,29 @@ export class VerRutasPage implements OnInit {
       (lineaObtenida) => {
         this.linea = lineaObtenida;
         console.log(this.linea);
+      }
+    );
+  }
+
+  obtenerMunicipios() {
+    this.rutasService.getMunicipios().subscribe(
+      (municipios) => {
+        this.municipios = municipios['municipios'];
+        // this.municipios.forEach(municipio => {
+        //   municipio.idMunicipio = 
+        // });
+        console.log(this.municipios);
+        
+      }
+    );
+  }
+
+  obtenerNucleosPorMunicipio() {
+    console.log(this.municipioOrigen)
+    this.rutasService.getNucleosporMunicipio(this.municipioOrigen.idMunicipio).subscribe(
+      (nucleos) => {
+        this.nucleos = nucleos;
+        console.log(this.nucleos);
       }
     );
   }
