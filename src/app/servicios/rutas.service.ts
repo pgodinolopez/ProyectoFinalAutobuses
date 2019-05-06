@@ -4,6 +4,7 @@ import { Horario } from '../modelos/horario';
 import { Linea } from '../modelos/linea';
 import { Municipio } from '../modelos/municipio';
 import { Nucleo } from '../modelos/nucleo';
+import { Bloque } from '../modelos/bloque';
 
 @Injectable({
   providedIn: 'root'
@@ -24,41 +25,25 @@ export class RutasService {
     
   }
 
-  setOrigen(origen: string) {
-    this.origen = origen;
-    console.log(origen);
+  // getMunicipios() {
+  //   return this.http.get<Municipio[]>(this.url_base + '/municipios/');
+  // }
+
+  getNucleos() {
+    return this.http.get<Nucleo[]>(this.url_base + '/nucleos');
   }
 
-  setDestino(destino: string) {
-    this.destino = destino;
-  }
 
-  getMunicipios() {
-    return this.http.get<Municipio[]>(this.url_base + '/municipios/');
-  }
-
-  getNucleosporMunicipio(idMunicipio: number) {
-    return this.http.get<Nucleo[]>(this.url_base + '/municipios/' + idMunicipio + '/nucleos');
-  }
-
-  getLineasPorMunicipio() {
-
-  }
-
-  getHorarios() {
-    return this.http.get<Horario[]>(this.url_horarios_lineas);
+  getHorarios(iDdestino: number, idOrigen: number) {
+    return this.http.get<Horario[]>(this.url_base + '/horarios_origen_destino?destino=' + iDdestino + '&lang=ES&origen=' + idOrigen);
   }
 
   getDatosLineaPorId(idlinea: number) {
     return this.http.get<Linea>(this.url_información_lineas + idlinea);
   }
 
-  construirUrl() {
-    this.url_horarios_lineas = this.url_base + '/horarios_origen_destino?destino=' + this.destino + '&lang=ES&origen=' + this.origen;
-  }
-
-  construirUrlInfo() {
-
+  obtenerBloquesDePasoPorIdLinea(idlinea: number) {
+    return this.http.get<Bloque>(this.url_base + '/lineas/' + idlinea + '/bloques?sentido=1');
   }
 
 }
