@@ -24,6 +24,7 @@ export class VerRutasPage implements OnInit {
   linea: Linea;
   bloques: Bloque[];
   orden: number;
+  operadores: string;
   // municipioOrigen: Municipio;
   // municipioDestino: Municipio;
 
@@ -44,11 +45,16 @@ export class VerRutasPage implements OnInit {
           // this.obtenerBloquesLinea(parseInt(horario.idlinea));
           // this.orden = this.bloques.find(i => i.idLinea === parseInt(horario.idlinea)).orden;
           horario.horaSalida = horario.horas[0];
+          if (horario.horaSalida === '--') {
+            horario.horaSalida = horario.horas[1];
+          }
           horario.horaLlegada = horario.horas[horario.horas.length-1];
           if (horario.horaLlegada === '--') {
             horario.horaLlegada = horario.horas[horario.horas.length-2];
           }
-          this.obtenerInformacionLineas(parseInt(horario.idlinea));
+          this.obtenerInformacionLineas(parseInt(horario.idlinea), horario);
+          this.obtenerPrecio(this.nucleoDestino.idNucleo, this.nucleoOrigen.idNucleo, horario);
+          // horario.operadores = this.operadores;
         });
       });
   }
@@ -57,13 +63,15 @@ export class VerRutasPage implements OnInit {
     this.nucleoOrigen = this.nucleos.find(i => i.nombre === this.origen);
     this.nucleoDestino = this.nucleos.find(i => i.nombre === this.destino);
     this.obtenerHorarios();
+    
   }
 
-  obtenerInformacionLineas(idlinea: number) {
-    this.rutasService.getDatosLineaPorId(idlinea).subscribe(
+  obtenerInformacionLineas(idlinea: number, horario: Horario) {
+    this.rutasService.getDatosLineaPorId(idlinea).subscribe( 
       (lineaObtenida) => {
-        this.linea = lineaObtenida;
-        console.log(this.linea);
+        horario.operadores = lineaObtenida.operadores;
+        console.log(horario.operadores)
+        console.log(lineaObtenida);
       }
     );
   }
@@ -95,6 +103,25 @@ export class VerRutasPage implements OnInit {
       (bloques) => {
         this.bloques = bloques['bloques'];
         console.log(this.bloques);
+      }
+    );
+  }
+
+  obtenerPrecio(idNucleoDestino: number, idNucleoOrigen: number, horario: Horario) {
+    this.rutasService.getSaltosEntreNucleos(idNucleoDestino, idNucleoOrigen).subscribe(
+      (saltos) => {
+        let calculo_saltos = saltos['calculo_saltos'];
+        let numero_saltos = calculo_saltos['saltos'];
+        this.rutasService.getTarifas().subscribe(
+          (tarifas) => {
+            tarifas['tarifasInterurbanas'].forEach(tarifa => {
+              if (tarifa['saltos'] == numero_saltos) {
+                horario.precio_billete_sencillo = tarifa['bs'];
+              }
+            });
+          }
+        );
+        console.log(calculo_saltos['saltos']);
       }
     );
   }

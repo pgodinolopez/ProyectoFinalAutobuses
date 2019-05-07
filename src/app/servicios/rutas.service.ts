@@ -6,6 +6,7 @@ import { Municipio } from '../modelos/municipio';
 import { Nucleo } from '../modelos/nucleo';
 import { Bloque } from '../modelos/bloque';
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -14,6 +15,8 @@ export class RutasService {
   // 1: http://api.ctan.es/v1/Consorcios/7/municipios/
   // 2: Líneas por municipio y por modo (autobús) http://api.ctan.es/v1/Consorcios/7/municipios/10/lineas?idModo=1
   // 3: Núcleos de un municipio http://api.ctan.es/v1/Consorcios/7/municipios/10/nucleos
+  // Saltos: http://api.ctan.es/v1/Consorcios/7/calculo_saltos?destino=46&origen=1
+  // Tarifas: http://api.ctan.es/v1/Consorcios/7/tarifas_interurbanas
 
   origen: string = '';
   destino: string = '';
@@ -42,8 +45,16 @@ export class RutasService {
     return this.http.get<Linea>(this.url_información_lineas + idlinea);
   }
 
+  getSaltosEntreNucleos(idNucleoDestino: number, idNucleoOrigen: number) {
+    return this.http.get(this.url_base + '/calculo_saltos?destino=' + idNucleoDestino + '&origen=' + idNucleoOrigen);
+  }
+
   obtenerBloquesDePasoPorIdLinea(idlinea: number) {
     return this.http.get<Bloque>(this.url_base + '/lineas/' + idlinea + '/bloques?sentido=1');
+  }
+
+  getTarifas() {
+    return this.http.get(this.url_base + '/tarifas_interurbanas');
   }
 
 }

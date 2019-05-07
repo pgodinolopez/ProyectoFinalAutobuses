@@ -7,4 +7,6 @@ export class Horario {
     demandahoras: string;
     horaSalida: string;
     horaLlegada: string;
+    operadores: string;
+    precio_billete_sencillo: number;
 }
