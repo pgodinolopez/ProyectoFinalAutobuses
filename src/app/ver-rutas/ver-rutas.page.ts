@@ -5,7 +5,7 @@ import { Linea } from '../modelos/linea';
 import { Municipio } from '../modelos/municipio';
 import { Nucleo } from '../modelos/nucleo';
 import { Bloque } from '../modelos/bloque';
-
+import { ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-ver-rutas',
@@ -25,10 +25,11 @@ export class VerRutasPage implements OnInit {
   bloques: Bloque[];
   orden: number;
   operadores: string;
+  toast: any;
   // municipioOrigen: Municipio;
   // municipioDestino: Municipio;
 
-  constructor(private rutasService: RutasService) { }
+  constructor(private rutasService: RutasService, public toastController: ToastController) { }
 
   ngOnInit() {
     // this.obtenerMunicipios();
@@ -60,10 +61,14 @@ export class VerRutasPage implements OnInit {
   }
 
   buscarRutas() {
+    this.horarios = [];
     this.nucleoOrigen = this.nucleos.find(i => i.nombre === this.origen);
     this.nucleoDestino = this.nucleos.find(i => i.nombre === this.destino);
-    this.obtenerHorarios();
-    
+    if (this.origen != '' && this.destino != '') {
+      this.obtenerHorarios();
+    } else {  
+      this.mostrarToast();
+    }
   }
 
   obtenerInformacionLineas(idlinea: number, horario: Horario) {
@@ -125,5 +130,17 @@ export class VerRutasPage implements OnInit {
       }
     );
   }
+
+  mostrarToast() {
+    this.toast = this.toastController.create({
+      message: 'Debes seleccionar un origen y un destino',
+      duration: 2000,
+      color: 'dark'
+    }).then((toastData)=>{
+      console.log(toastData);
+      toastData.present();
+    });
+  }
+
  
 }
