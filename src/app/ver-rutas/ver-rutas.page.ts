@@ -29,6 +29,8 @@ export class VerRutasPage implements OnInit {
   toast: any;
   modo_autobus: boolean;
   fecha_seleccionada: any;
+  dia_final: string;
+  lista_horarios_final: Horario[];
   // municipioOrigen: Municipio;
   // municipioDestino: Municipio;
 
@@ -40,34 +42,43 @@ export class VerRutasPage implements OnInit {
   }
 
   obtenerHorarios() {
-    console.log(format(new Date(), "'Today is a' iiii"));
+    let fecha = new Date(this.fecha_seleccionada);
+    let dia_semana = format(fecha, "iiii"); 
+
     this.rutasService.getHorarios(this.nucleoDestino.idNucleo, this.nucleoOrigen.idNucleo).subscribe(
       (horarios)=>{
         console.log(horarios['horario']);
         this.horarios = horarios['horario'];
         this.horarios.forEach(horario => {
-          this.obtenerInformacionLineas(parseInt(horario.idlinea), horario);
-            
-            // this.obtenerBloquesLinea(parseInt(horario.idlinea));
-            // this.orden = this.bloques.find(i => i.idLinea === parseInt(horario.idlinea)).orden;
-            horario.horaSalida = horario.horas[0];
-            if (horario.horaSalida === '--') {
-              horario.horaSalida = horario.horas[1];
-            }
-            horario.horaLlegada = horario.horas[horario.horas.length-1];
-            if (horario.horaLlegada === '--') {
-              horario.horaLlegada = horario.horas[horario.horas.length-2];
-            }
-          
-            this.obtenerPrecio(this.nucleoDestino.idNucleo, this.nucleoOrigen.idNucleo, horario);
-            console.log(horario)
-            // horario.operadores = this.operadores;      
+          if (horario.dias=="L-V" && (dia_semana == "Monday" || dia_semana == "Tuesday" || dia_semana == "Wednesday" || dia_semana == "Thursday" || dia_semana == "Friday")) {
+            this.dia_final = 'L-V';
+            this.obtenerDatosHorarioPorLinea(horario);
+          } else if (horario.dias=="L-S" && (dia_semana == "Monday" || dia_semana == "Tuesday" || dia_semana == "Wednesday" || dia_semana == "Thursday" || dia_semana == "Friday" || dia_semana == "Saturday")) {
+            this.dia_final = 'L-S';
+            this.obtenerDatosHorarioPorLinea(horario);
+          } else if (horario.dias=="Sab" && dia_semana == "Saturday") {
+            this.dia_final = 'Sab';
+            this.obtenerDatosHorarioPorLinea(horario);
+          } else if (horario.dias=="Dom" && dia_semana == "Sunday") {
+            this.dia_final = 'L-S';
+            this.obtenerDatosHorarioPorLinea(horario);
+          } else if (horario.dias=="L-D" && (dia_semana == "Monday" || dia_semana == "Tuesday" || dia_semana == "Wednesday" || dia_semana == "Thursday" || dia_semana == "Friday" || dia_semana == "Saturday" || dia_semana == "Sunday")) {
+            this.dia_final = 'L-S';
+            this.obtenerDatosHorarioPorLinea(horario);
+          } else if (horario.dias=="L-D" && (dia_semana == "Monday" || dia_semana == "Tuesday" || dia_semana == "Wednesday" || dia_semana == "Thursday" || dia_semana == "Friday" || dia_semana == "Saturday" || dia_semana == "Sunday")) {
+            this.dia_final = 'L-S';
+            this.obtenerDatosHorarioPorLinea(horario);
+          } else if (horario.dias=="Diar." && (dia_semana == "Monday" || dia_semana == "Tuesday" || dia_semana == "Wednesday" || dia_semana == "Thursday" || dia_semana == "Friday" || dia_semana == "Saturday" || dia_semana == "Sunday")) {
+            this.dia_final = 'L-S';
+            this.obtenerDatosHorarioPorLinea(horario);
+          }     
         });
       });
   }
 
   buscarRutas() {
     this.horarios = [];
+    this.lista_horarios_final = [];
     this.nucleoOrigen = this.nucleos.find(i => i.nombre === this.origen);
     this.nucleoDestino = this.nucleos.find(i => i.nombre === this.destino);
     if (this.origen != '' && this.destino != '') {
@@ -140,6 +151,26 @@ export class VerRutasPage implements OnInit {
         console.log(calculo_saltos['saltos']);
       }
     );
+  }
+
+  obtenerDatosHorarioPorLinea(horario: Horario) {
+    this.obtenerInformacionLineas(parseInt(horario.idlinea), horario);
+            
+    // this.obtenerBloquesLinea(parseInt(horario.idlinea));
+    // this.orden = this.bloques.find(i => i.idLinea === parseInt(horario.idlinea)).orden;
+    horario.horaSalida = horario.horas[0];
+    if (horario.horaSalida === '--') {
+      horario.horaSalida = horario.horas[1];
+    }
+    horario.horaLlegada = horario.horas[horario.horas.length-1];
+    if (horario.horaLlegada === '--') {
+      horario.horaLlegada = horario.horas[horario.horas.length-2];
+    }
+  
+    this.obtenerPrecio(this.nucleoDestino.idNucleo, this.nucleoOrigen.idNucleo, horario);
+    console.log(horario)
+    this.lista_horarios_final.push(horario);
+    // horario.operadores = this.operadores;  
   }
 
   mostrarToast() {

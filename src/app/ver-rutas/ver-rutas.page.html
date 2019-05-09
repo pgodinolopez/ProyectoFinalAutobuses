@@ -34,7 +34,7 @@
 
   <ion-button (click)="buscarRutas()" color="primary">Buscar</ion-button>
   <ng-template [ngIf]="modo_autobus">
-    <ion-card *ngFor="let horario of horarios">
+    <ion-card *ngFor="let horario of lista_horarios_final">
     <!-- <ion-card-header>
         <ion-card-subtitle>Card Subtitle</ion-card-subtitle>
         <ion-card-title>Card Title</ion-card-title>
