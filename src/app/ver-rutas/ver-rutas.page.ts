@@ -6,6 +6,7 @@ import { Municipio } from '../modelos/municipio';
 import { Nucleo } from '../modelos/nucleo';
 import { Bloque } from '../modelos/bloque';
 import { ToastController } from '@ionic/angular';
+import { format, subDays } from 'date-fns'
 
 @Component({
   selector: 'app-ver-rutas',
@@ -26,6 +27,8 @@ export class VerRutasPage implements OnInit {
   orden: number;
   operadores: string;
   toast: any;
+  modo_autobus: boolean;
+  fecha_seleccionada: any;
   // municipioOrigen: Municipio;
   // municipioDestino: Municipio;
 
@@ -37,25 +40,28 @@ export class VerRutasPage implements OnInit {
   }
 
   obtenerHorarios() {
-    
+    console.log(format(new Date(), "'Today is a' iiii"));
     this.rutasService.getHorarios(this.nucleoDestino.idNucleo, this.nucleoOrigen.idNucleo).subscribe(
       (horarios)=>{
         console.log(horarios['horario']);
         this.horarios = horarios['horario'];
         this.horarios.forEach(horario => {
-          // this.obtenerBloquesLinea(parseInt(horario.idlinea));
-          // this.orden = this.bloques.find(i => i.idLinea === parseInt(horario.idlinea)).orden;
-          horario.horaSalida = horario.horas[0];
-          if (horario.horaSalida === '--') {
-            horario.horaSalida = horario.horas[1];
-          }
-          horario.horaLlegada = horario.horas[horario.horas.length-1];
-          if (horario.horaLlegada === '--') {
-            horario.horaLlegada = horario.horas[horario.horas.length-2];
-          }
           this.obtenerInformacionLineas(parseInt(horario.idlinea), horario);
-          this.obtenerPrecio(this.nucleoDestino.idNucleo, this.nucleoOrigen.idNucleo, horario);
-          // horario.operadores = this.operadores;
+            
+            // this.obtenerBloquesLinea(parseInt(horario.idlinea));
+            // this.orden = this.bloques.find(i => i.idLinea === parseInt(horario.idlinea)).orden;
+            horario.horaSalida = horario.horas[0];
+            if (horario.horaSalida === '--') {
+              horario.horaSalida = horario.horas[1];
+            }
+            horario.horaLlegada = horario.horas[horario.horas.length-1];
+            if (horario.horaLlegada === '--') {
+              horario.horaLlegada = horario.horas[horario.horas.length-2];
+            }
+          
+            this.obtenerPrecio(this.nucleoDestino.idNucleo, this.nucleoOrigen.idNucleo, horario);
+            console.log(horario)
+            // horario.operadores = this.operadores;      
         });
       });
   }
@@ -74,9 +80,14 @@ export class VerRutasPage implements OnInit {
   obtenerInformacionLineas(idlinea: number, horario: Horario) {
     this.rutasService.getDatosLineaPorId(idlinea).subscribe( 
       (lineaObtenida) => {
+        horario.linea = lineaObtenida;
         horario.operadores = lineaObtenida.operadores;
-        console.log(horario.operadores)
-        console.log(lineaObtenida);
+        if (horario.linea.modo == 'Autobús') {
+          this.modo_autobus = true;
+        }
+        // console.log(horario.operadores)
+        // console.log(horario.linea.modo);
+        // console.log(lineaObtenida);
       }
     );
   }
@@ -142,5 +153,4 @@ export class VerRutasPage implements OnInit {
     });
   }
 
- 
 }

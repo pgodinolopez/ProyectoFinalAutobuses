@@ -8,37 +8,50 @@
 
   <ion-item>
     <ion-label>Origen</ion-label>
-    <ion-select  okText="Ok" cancelText="Cancelar" [(ngModel)]="origen">
+    <ion-select  okText="Aceptar" cancelText="Cancelar" [(ngModel)]="origen">
       <ion-select-option *ngFor="let nucleo of nucleos" value="{{nucleo.nombre}}">{{nucleo.nombre}}</ion-select-option>  
     </ion-select>
   </ion-item>
 
   <ion-item>
     <ion-label>Destino</ion-label>
-    <ion-select  okText="Ok" cancelText="Cancelar" [(ngModel)]="destino">
+    <ion-select  okText="Aceptar" cancelText="Cancelar" [(ngModel)]="destino">
       <ion-select-option *ngFor="let nucleo of nucleos" value="{{nucleo.nombre}}">{{nucleo.nombre}}</ion-select-option>  
     </ion-select>
   </ion-item>
 
-  <ion-button (click)="buscarRutas()" color="primary">Buscar</ion-button>
+  <ion-item>
+    <ion-label>Fecha</ion-label>
+    <ion-datetime
+      [(ngModel)]="fecha_seleccionada"
+      doneText="Aceptar"
+      cancelText="Cancelar" 
+      pickerFormat="DD MMMM" 
+      display-format="DD MMMM"
+      month-names="Enero, Febrero, Marzo, Abril, Mayo, Junio, Julio, Agosto, Septiembre, Octubre, Noviembre, Diciembre">
+    </ion-datetime>
+  </ion-item>
 
-  <ion-card *ngFor="let horario of horarios">
+  <ion-button (click)="buscarRutas()" color="primary">Buscar</ion-button>
+  <ng-template [ngIf]="modo_autobus">
+    <ion-card *ngFor="let horario of horarios">
     <!-- <ion-card-header>
         <ion-card-subtitle>Card Subtitle</ion-card-subtitle>
         <ion-card-title>Card Title</ion-card-title>
       </ion-card-header> -->
 
-    <ion-card-content>
-      <ion-item lines="none">
-        <ion-label>Id línea: {{horario.idlinea}}</ion-label>
-        <ion-label>
-          {{horario.horaSalida}}
-          <br>
-          {{horario.horaLlegada}}
-          <br>
-        </ion-label>
-      </ion-item>
-      <ion-item><ion-label>Empresa: {{horario.operadores}}<br>{{horario.precio_billete_sencillo | number : '1.2-2'}} €</ion-label></ion-item>
-    </ion-card-content>
-  </ion-card>
+      <ion-card-content>
+        <ion-item lines="none">
+          <ion-label>Id línea: {{horario.idlinea}}</ion-label>
+          <ion-label>
+            {{horario.horaSalida}}
+            <br>
+            {{horario.horaLlegada}}
+            <br>
+          </ion-label>
+        </ion-item>
+        <ion-item><ion-label>Empresa: {{horario.operadores}}<br>{{horario.precio_billete_sencillo | number : '1.2-2'}} €</ion-label></ion-item>
+      </ion-card-content>
+    </ion-card>
+  </ng-template>
 </ion-content>

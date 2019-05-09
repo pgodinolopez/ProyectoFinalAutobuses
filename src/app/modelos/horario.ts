@@ -1,3 +1,5 @@
+import { Linea } from './linea';
+
 export class Horario {
     idlinea: string;
     codigo: string;
@@ -9,4 +11,5 @@ export class Horario {
     horaLlegada: string;
     operadores: string;
     precio_billete_sencillo: number;
+    linea: Linea;
 }
