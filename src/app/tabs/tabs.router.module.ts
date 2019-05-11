@@ -16,15 +16,15 @@ const routes: Routes = [
           }
         ]
       },
-      // {
-      //   path: 'tab2',
-      //   children: [
-      //     {
-      //       path: '',
-      //       loadChildren: '../tab2/tab2.module#Tab2PageModule'
-      //     }
-      //   ]
-      // },
+      {
+        path: 'paradas-cercanas',
+        children: [
+          {
+            path: '',
+            loadChildren: '../paradas-cercanas/paradas-cercanas.module#ParadasCercanasPageModule'
+          }
+        ]
+      },
       // {
       //   path: 'tab3',
       //   children: [
