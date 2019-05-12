@@ -31,58 +31,11 @@ export class ParadasCercanasPage implements OnInit {
     this.listaParadas = [];
   }
 
-  ngOnInit() {
-    this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION).then(
-      result => {
-        if (result.hasPermission) {
-          this.geolocation.getCurrentPosition().then((position) =>  {
-            this.localizacion.latitud = position.coords.latitude;
-            this.localizacion.longitud = position.coords.longitude;
-            console.log(this.localizacion.latitud)
-            console.log(this.localizacion.longitud)
-            let coordinates: LatLng = new LatLng( this.localizacion.latitud, this.localizacion.longitud );
-            console.log(coordinates)
-            this.loadMap(coordinates);
-          });
-          
-          
-          
-        } else {
-          //If having permission show 'Turn On GPS' dialogue
-          this.androidPermissions.requestPermission(this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION).then(
-           () => {
-            this.geolocation.getCurrentPosition().then((position) =>  {
-              this.localizacion.latitud = position.coords.latitude;
-              this.localizacion.longitud = position.coords.longitude;
-            }).then(
-              () => {
-                
-              }
-            )
-
-
-           }
-          )
-          //If not having permission ask for permission
-          // this.requestGPSPermission();
-        }
-      },
-      err => this.androidPermissions.requestPermission(this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION)
-    )
-    
-    // this.androidPermissions.requestPermissions([this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION, this.androidPermissions.PERMISSION.GET_ACCOUNTS]);
-
-    
-    // let options = {
-    //   enableHighAccuracy: true,
-    //   timeout: 25000
-    // };
-    
-
+  obtenerParadas() {
     this.paradasService.getParadas().subscribe(
       (paradas) => {
         let paradasObtenidas = paradas['paradas'];
-        this.listaParadas = paradas['paradas'];
+        // this.listaParadas = paradas['paradas'];
         paradasObtenidas.forEach(parada => {
           this.paradasService.getDatosParada(parada['idParada']).subscribe(
             (datosParada) => {
@@ -93,19 +46,72 @@ export class ParadasCercanasPage implements OnInit {
             }
           );
         });
+        console.log(this.listaParadas);
       }
     );
+  }
+ 
+  ngOnInit() {
+    
+    
+    
+    // this.androidPermissions.requestPermissions([this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION, this.androidPermissions.PERMISSION.GET_ACCOUNTS]);
+
+    
+    // let options = {
+    //   enableHighAccuracy: true,
+    //   timeout: 25000
+    // };
+    
+
+    
 
       
   }
 
-  // ngAfterViewInit() {
+  ngAfterViewInit() {
+    this.obtenerParadas();
+		this.platform.ready().then( () => {
 
-	// 	this.platform.ready().then( () => {
-
-	// 		this.loadMap();
-	// 	});
-	// }
+			this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION).then(
+        result => {
+          if (result.hasPermission) {
+            this.geolocation.getCurrentPosition().then((position) =>  {
+              this.localizacion.latitud = position.coords.latitude;
+              this.localizacion.longitud = position.coords.longitude;
+              console.log(this.localizacion.latitud)
+              console.log(this.localizacion.longitud)
+              let coordinates: LatLng = new LatLng( this.localizacion.latitud, this.localizacion.longitud );
+              console.log(coordinates)
+              this.loadMap(coordinates);
+            });
+            
+            
+            
+          } else {
+            //If having permission show 'Turn On GPS' dialogue
+            this.androidPermissions.requestPermission(this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION).then(
+             () => {
+              this.geolocation.getCurrentPosition().then((position) =>  {
+                this.localizacion.latitud = position.coords.latitude;
+                this.localizacion.longitud = position.coords.longitude;
+              }).then(
+                () => {
+                  
+                }
+              )
+  
+  
+             }
+            )
+            //If not having permission ask for permission
+            // this.requestGPSPermission();
+          }
+        },
+        err => this.androidPermissions.requestPermission(this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION)
+      )
+		});
+	}
 
   loadMap(coordinates: any) {
     
