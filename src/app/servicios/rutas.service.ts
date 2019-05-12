@@ -17,7 +17,7 @@ export class RutasService {
   // 3: Núcleos de un municipio http://api.ctan.es/v1/Consorcios/7/municipios/10/nucleos
   // Saltos: http://api.ctan.es/v1/Consorcios/7/calculo_saltos?destino=46&origen=1
   // Tarifas: http://api.ctan.es/v1/Consorcios/7/tarifas_interurbanas
-
+  
   origen: string = '';
   destino: string = '';
   url_base = 'http://api.ctan.es/v1/Consorcios/7';
