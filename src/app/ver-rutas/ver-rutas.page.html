@@ -33,6 +33,11 @@
     </ion-datetime>
   </ion-item>
 
+  <ion-item>
+    <ion-label>Adaptado a personas con movilidad reducida</ion-label>
+    <ion-toggle [(ngModel)]="adaptado_movilidad_reducida" (ionChange)="toggle_pmr_cambiado($event)"></ion-toggle>
+  </ion-item>
+
   <ion-button (click)="buscarRutas()" color="primary">Buscar</ion-button>
   <ng-template [ngIf]="modo_autobus">
     <ion-card *ngFor="let horario of lista_horarios_final">

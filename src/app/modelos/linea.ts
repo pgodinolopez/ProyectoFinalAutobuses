@@ -12,7 +12,7 @@ export class Linea {
     color: number;
     tieneIda: boolean;
     tieneVuelta: boolean;
-    pmr: number;
+    pmr: string;
     concesion: number;
 
 }

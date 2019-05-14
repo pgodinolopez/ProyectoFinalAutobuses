@@ -43,6 +43,17 @@ export class RutasService {
 
   getDatosLineaPorId(idlinea: number) {
     return this.http.get<Linea>(this.url_información_lineas + idlinea);
+    // return new Promise((resolve, reject) => {
+    //   this.http.get<Linea>(this.url_información_lineas + idlinea)
+    //     .subscribe(
+    //      data => {
+    //       resolve(data)
+    //     },
+    //      error => {
+    //       reject(error);
+    //     },
+    //     );
+    // });
   }
 
   getSaltosEntreNucleos(idNucleoDestino: number, idNucleoOrigen: number) {

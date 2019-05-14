@@ -31,14 +31,23 @@ export class VerRutasPage implements OnInit {
   fecha_seleccionada: any;
   dia_final: string;
   lista_horarios_final: Horario[];
+  adaptado_movilidad_reducida: boolean;
+  lineaObtenida: Linea;
   // municipioOrigen: Municipio;
   // municipioDestino: Municipio;
 
-  constructor(private rutasService: RutasService, public toastController: ToastController) { }
+  constructor(private rutasService: RutasService, public toastController: ToastController) { 
+    this.adaptado_movilidad_reducida = false;
+  }
 
   ngOnInit() {
     // this.obtenerMunicipios();
     this.obtenerNucleos();
+  }
+
+  toggle_pmr_cambiado($event) {
+    
+    console.log(this.adaptado_movilidad_reducida)
   }
 
   obtenerHorarios() {
@@ -51,26 +60,41 @@ export class VerRutasPage implements OnInit {
         this.horarios = horarios['horario'];
         this.horarios.forEach(horario => {
           if (horario.dias=="L-V" && (dia_semana == "Monday" || dia_semana == "Tuesday" || dia_semana == "Wednesday" || dia_semana == "Thursday" || dia_semana == "Friday")) {
-            this.dia_final = 'L-V';
+            // this.obtenerInformacionLineas(parseInt(horario.idlinea), horario);
             this.obtenerDatosHorarioPorLinea(horario);
           } else if (horario.dias=="L-S" && (dia_semana == "Monday" || dia_semana == "Tuesday" || dia_semana == "Wednesday" || dia_semana == "Thursday" || dia_semana == "Friday" || dia_semana == "Saturday")) {
-            this.dia_final = 'L-S';
+            // this.obtenerInformacionLineas(parseInt(horario.idlinea), horario);
             this.obtenerDatosHorarioPorLinea(horario);
           } else if (horario.dias=="Sab" && dia_semana == "Saturday") {
-            this.dia_final = 'Sab';
+            // this.obtenerInformacionLineas(parseInt(horario.idlinea), horario);
             this.obtenerDatosHorarioPorLinea(horario);
           } else if (horario.dias=="Dom" && dia_semana == "Sunday") {
-            this.dia_final = 'L-S';
-            this.obtenerDatosHorarioPorLinea(horario);
+            this.obtenerDatosHorarioPorLinea(horario);           
+            // this.obtenerInformacionLineas(parseInt(horario.idlinea), horario);
           } else if (horario.dias=="L-D" && (dia_semana == "Monday" || dia_semana == "Tuesday" || dia_semana == "Wednesday" || dia_semana == "Thursday" || dia_semana == "Friday" || dia_semana == "Saturday" || dia_semana == "Sunday")) {
-            this.dia_final = 'L-S';
-            this.obtenerDatosHorarioPorLinea(horario);
-          } else if (horario.dias=="L-D" && (dia_semana == "Monday" || dia_semana == "Tuesday" || dia_semana == "Wednesday" || dia_semana == "Thursday" || dia_semana == "Friday" || dia_semana == "Saturday" || dia_semana == "Sunday")) {
-            this.dia_final = 'L-S';
-            this.obtenerDatosHorarioPorLinea(horario);
+            this.obtenerDatosHorarioPorLinea(horario);            
+            // this.obtenerInformacionLineas(parseInt(horario.idlinea), horario);
+          } else if (horario.dias=="S-D" && (dia_semana == "Saturday" || dia_semana == "Sunday")) {
+            this.obtenerDatosHorarioPorLinea(horario);            
+            // this.obtenerInformacionLineas(parseInt(horario.idlinea), horario);
           } else if (horario.dias=="Diar." && (dia_semana == "Monday" || dia_semana == "Tuesday" || dia_semana == "Wednesday" || dia_semana == "Thursday" || dia_semana == "Friday" || dia_semana == "Saturday" || dia_semana == "Sunday")) {
-            this.dia_final = 'L-S';
-            this.obtenerDatosHorarioPorLinea(horario);
+            this.obtenerDatosHorarioPorLinea(horario);            
+            // this.obtenerInformacionLineas(parseInt(horario.idlinea), horario);
+          } else if (horario.dias=="S-D-F" && (dia_semana == "Saturday" || dia_semana == "Sunday" || dia_semana == "Monday" || dia_semana == "Tuesday" || dia_semana == "Wednesday" || dia_semana == "Thursday" || dia_semana == "Friday")) {
+            this.obtenerDatosHorarioPorLinea(horario);            
+            // this.obtenerInformacionLineas(parseInt(horario.idlinea), horario);
+          } else if (horario.dias=="Fest" && (dia_semana == "Monday" || dia_semana == "Tuesday" || dia_semana == "Wednesday" || dia_semana == "Thursday" || dia_semana == "Friday" || dia_semana == "Saturday" || dia_semana == "Sunday")) {
+            this.obtenerDatosHorarioPorLinea(horario);            
+            // this.obtenerInformacionLineas(parseInt(horario.idlinea), horario);
+          } else if (horario.dias=="Esp" && (dia_semana == "Monday" || dia_semana == "Tuesday" || dia_semana == "Wednesday" || dia_semana == "Thursday" || dia_semana == "Friday" || dia_semana == "Saturday" || dia_semana == "Sunday")) {
+            this.obtenerDatosHorarioPorLinea(horario);            
+            // this.obtenerInformacionLineas((horario.idlinea), horario);
+          } else if (horario.dias=="D y F" && (dia_semana == "Sunday" || dia_semana == "Monday" || dia_semana == "Tuesday" || dia_semana == "Wednesday" || dia_semana == "Thursday" || dia_semana == "Friday" || dia_semana == "Saturday")) {
+            this.obtenerDatosHorarioPorLinea(horario);            
+            // this.obtenerInformacionLineas(parseInt(horario.idlinea), horario);
+          } else if (horario.dias=="L-V,E" && (dia_semana == "Monday" || dia_semana == "Tuesday" || dia_semana == "Wednesday" || dia_semana == "Thursday" || dia_semana == "Friday")) {
+            this.obtenerDatosHorarioPorLinea(horario);            
+            // this.obtenerInformacionLineas(parseInt(horario.idlinea), horario);
           }     
         });
       });
@@ -89,18 +113,33 @@ export class VerRutasPage implements OnInit {
   }
 
   obtenerInformacionLineas(idlinea: number, horario: Horario) {
+    
     this.rutasService.getDatosLineaPorId(idlinea).subscribe( 
-      (lineaObtenida) => {
+      (lineaObtenida: Linea) => {
         horario.linea = lineaObtenida;
         horario.operadores = lineaObtenida.operadores;
+        // if (lineaObtenida.pmr === 'Adaptada a personas con movilidad reducida') {
+        //   horario.pmr = true;
+        // } else {
+        //   horario.pmr = false;
+        // }
+        // this.obtenerDatosHorarioPorLinea(horario, horario.linea);
+        
         if (horario.linea.modo == 'Autobús') {
           this.modo_autobus = true;
         }
+        
         // console.log(horario.operadores)
         // console.log(horario.linea.modo);
         // console.log(lineaObtenida);
+        
       }
+      
     );
+    
+    
+    
+    
   }
 
   // obtenerMunicipios() {
@@ -156,6 +195,12 @@ export class VerRutasPage implements OnInit {
   obtenerDatosHorarioPorLinea(horario: Horario) {
     this.obtenerInformacionLineas(parseInt(horario.idlinea), horario);
             
+    // if (linea.pmr === 'Adaptada a personas con movilidad reducida') {
+    //   horario.pmr = true;
+    // } else {
+    //   horario.pmr = false;
+    // }
+
     // this.obtenerBloquesLinea(parseInt(horario.idlinea));
     // this.orden = this.bloques.find(i => i.idLinea === parseInt(horario.idlinea)).orden;
     horario.horaSalida = horario.horas[0];
@@ -169,7 +214,12 @@ export class VerRutasPage implements OnInit {
   
     this.obtenerPrecio(this.nucleoDestino.idNucleo, this.nucleoOrigen.idNucleo, horario);
     console.log(horario)
-    this.lista_horarios_final.push(horario);
+    if (this.adaptado_movilidad_reducida == true && horario.pmr) {
+      this.lista_horarios_final.push(horario);
+    } else if (!this.adaptado_movilidad_reducida) {
+      this.lista_horarios_final.push(horario);
+    }
+    console.log(this.lista_horarios_final);
     // horario.operadores = this.operadores;  
   }
 

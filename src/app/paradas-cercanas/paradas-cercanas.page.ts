@@ -31,8 +31,8 @@ export class ParadasCercanasPage implements OnInit {
     this.listaParadas = [];
   }
 
-  obtenerParadas() {
-    this.paradasService.getParadas().subscribe(
+  async obtenerParadas() {
+    await this.paradasService.getParadas().subscribe(
       (paradas) => {
         let paradasObtenidas = paradas['paradas'];
         // this.listaParadas = paradas['paradas'];
@@ -70,9 +70,9 @@ export class ParadasCercanasPage implements OnInit {
   }
 
   ngAfterViewInit() {
-    this.obtenerParadas();
+    
 		this.platform.ready().then( () => {
-
+      this.obtenerParadas();
 			this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION).then(
         result => {
           if (result.hasPermission) {
@@ -95,11 +95,12 @@ export class ParadasCercanasPage implements OnInit {
               this.geolocation.getCurrentPosition().then((position) =>  {
                 this.localizacion.latitud = position.coords.latitude;
                 this.localizacion.longitud = position.coords.longitude;
-              }).then(
-                () => {
-                  
-                }
-              )
+                console.log(this.localizacion.latitud)
+                console.log(this.localizacion.longitud)
+                let coordinates: LatLng = new LatLng( this.localizacion.latitud, this.localizacion.longitud );
+                console.log(coordinates)
+                this.loadMap(coordinates);
+              });
   
   
              }

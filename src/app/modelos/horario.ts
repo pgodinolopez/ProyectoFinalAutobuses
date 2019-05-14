@@ -11,5 +11,6 @@ export class Horario {
     horaLlegada: string;
     operadores: string;
     precio_billete_sencillo: number;
+    pmr: boolean;
     linea: Linea;
 }
