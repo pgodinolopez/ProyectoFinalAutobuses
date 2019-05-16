@@ -5,7 +5,8 @@ import {
   GoogleMapsEvent,
   LatLng,
   MarkerOptions,
-  Marker
+  Marker,
+  MarkerCluster
 } from "@ionic-native/google-maps";
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 
@@ -26,13 +27,14 @@ export class ParadasCercanasPage implements OnInit {
   
   listaParadas: Parada[]; 
   localizacion = {latitud: null, longitud: null};
+  contador:number = 0;
 
   constructor(public platform: Platform, public nav: NavController, private paradasService: ParadasService, public geolocation: Geolocation, private androidPermissions: AndroidPermissions) {
     this.listaParadas = [];
   }
 
   async obtenerParadas() {
-    await this.paradasService.getParadas().subscribe(
+    this.paradasService.getParadas().subscribe(
       (paradas) => {
         let paradasObtenidas = paradas['paradas'];
         // this.listaParadas = paradas['paradas'];
@@ -46,6 +48,7 @@ export class ParadasCercanasPage implements OnInit {
             }
           );
         });
+        
         console.log(this.listaParadas);
       }
     );
@@ -53,7 +56,14 @@ export class ParadasCercanasPage implements OnInit {
  
   ngOnInit() {
     
-    
+    this.platform.ready().then( () => {
+      this.obtenerParadas().then(
+        ()=>{
+          this.obtenerPosicionActual();
+        }
+      );
+			
+		});
     
     // this.androidPermissions.requestPermissions([this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION, this.androidPermissions.PERMISSION.GET_ACCOUNTS]);
 
@@ -71,11 +81,29 @@ export class ParadasCercanasPage implements OnInit {
 
   ngAfterViewInit() {
     
-		this.platform.ready().then( () => {
-      this.obtenerParadas();
-			this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION).then(
-        result => {
-          if (result.hasPermission) {
+		
+	}
+
+  obtenerPosicionActual() {
+    this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION).then(
+      result => {
+        if (result.hasPermission) {
+          this.geolocation.getCurrentPosition().then((position) =>  {
+            this.localizacion.latitud = position.coords.latitude;
+            this.localizacion.longitud = position.coords.longitude;
+            console.log(this.localizacion.latitud)
+            console.log(this.localizacion.longitud)
+            let coordinates: LatLng = new LatLng( this.localizacion.latitud, this.localizacion.longitud );
+            console.log(coordinates)
+            this.loadMap(coordinates);
+          });
+          
+          
+          
+        } else {
+          //If having permission show 'Turn On GPS' dialogue
+          this.androidPermissions.requestPermission(this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION).then(
+           () => {
             this.geolocation.getCurrentPosition().then((position) =>  {
               this.localizacion.latitud = position.coords.latitude;
               this.localizacion.longitud = position.coords.longitude;
@@ -85,34 +113,17 @@ export class ParadasCercanasPage implements OnInit {
               console.log(coordinates)
               this.loadMap(coordinates);
             });
-            
-            
-            
-          } else {
-            //If having permission show 'Turn On GPS' dialogue
-            this.androidPermissions.requestPermission(this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION).then(
-             () => {
-              this.geolocation.getCurrentPosition().then((position) =>  {
-                this.localizacion.latitud = position.coords.latitude;
-                this.localizacion.longitud = position.coords.longitude;
-                console.log(this.localizacion.latitud)
-                console.log(this.localizacion.longitud)
-                let coordinates: LatLng = new LatLng( this.localizacion.latitud, this.localizacion.longitud );
-                console.log(coordinates)
-                this.loadMap(coordinates);
-              });
-  
-  
-             }
-            )
-            //If not having permission ask for permission
-            // this.requestGPSPermission();
-          }
-        },
-        err => this.androidPermissions.requestPermission(this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION)
-      )
-		});
-	}
+
+
+           }
+          )
+          //If not having permission ask for permission
+          // this.requestGPSPermission();
+        }
+      },
+      err => this.androidPermissions.requestPermission(this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION)
+    )
+  }
 
   loadMap(coordinates: any) {
     
@@ -124,7 +135,7 @@ export class ParadasCercanasPage implements OnInit {
 
     let map = GoogleMaps.create( 'map');
     // let map = GoogleMaps.create( 'map', position );
-  
+    
 
     map.one( GoogleMapsEvent.MAP_READY ).then( ( data: any ) => {
   
@@ -133,21 +144,41 @@ export class ParadasCercanasPage implements OnInit {
       
   
       map.animateCamera( position );
-  
-      this.listaParadas.forEach(parada => {
-        
-        let coordenadasParada: LatLng = new LatLng(parada.latitud, parada.longitud);
+      
+      
 
-        let markerOptions: MarkerOptions = {
-          position: coordenadasParada,
-          icon: "assets/images/marker.png",
-          title: parada.nombre
-        };
+      // this.listaParadas.forEach(parada => {
+      //   this.contador++;  
+      //   let coordenadasParada: LatLng = new LatLng(parada.latitud, parada.longitud);
+
+      //   let markerOptions: MarkerOptions = {
+      //     position: coordenadasParada,
+      //     icon: "assets/images/marker.png",
+      //     title: parada.nombre
+      //   };
     
-        const marker = map.addMarker( markerOptions )
+      //   const marker = map.addMarker( markerOptions );
+      //   console.log(this.contador);
+      //   console.log(this.listaParadas.length);
         
-      });
+      // });
+      this.obtenerMarcadores(map);
     })
   }
 
+  obtenerMarcadores(mapa) {
+    // tslint:disable-next-line:variable-name
+    for (let i = 0; i < this.listaParadas.length; i++) {
+      this.addMarcadores(this.listaParadas[i], mapa);
+    }
+  }
+
+  addMarcadores(parada, mapa) {
+    const posicion = new LatLng(parada.latitud, parada.longitud);
+    let opcionesMarcador: MarkerOptions = { position: posicion, title: parada.nombre, icon: "assets/images/marker.png" };
+    const marcador = mapa.addMarker( opcionesMarcador );
+    console.log(this.listaParadas.length)
+  }
+
 }
+

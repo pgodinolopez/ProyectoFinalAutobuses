@@ -5,6 +5,7 @@ import { Linea } from '../modelos/linea';
 import { Municipio } from '../modelos/municipio';
 import { Nucleo } from '../modelos/nucleo';
 import { Bloque } from '../modelos/bloque';
+import { retry } from 'rxjs/operators';
 
 
 @Injectable({
@@ -33,16 +34,16 @@ export class RutasService {
   // }
 
   getNucleos() {
-    return this.http.get<Nucleo[]>(this.url_base + '/nucleos');
+    return this.http.get<Nucleo[]>(this.url_base + '/nucleos').pipe(retry(5));;
   }
 
 
   getHorarios(iDdestino: number, idOrigen: number) {
-    return this.http.get<Horario[]>(this.url_base + '/horarios_origen_destino?destino=' + iDdestino + '&lang=ES&origen=' + idOrigen);
+    return this.http.get<Horario[]>(this.url_base + '/horarios_origen_destino?destino=' + iDdestino + '&lang=ES&origen=' + idOrigen).pipe(retry(5));
   }
 
   getDatosLineaPorId(idlinea: number) {
-    return this.http.get<Linea>(this.url_información_lineas + idlinea);
+    return this.http.get<Linea>(this.url_información_lineas + idlinea).pipe(retry(5));
     // return new Promise((resolve, reject) => {
     //   this.http.get<Linea>(this.url_información_lineas + idlinea)
     //     .subscribe(
@@ -57,7 +58,7 @@ export class RutasService {
   }
 
   getSaltosEntreNucleos(idNucleoDestino: number, idNucleoOrigen: number) {
-    return this.http.get(this.url_base + '/calculo_saltos?destino=' + idNucleoDestino + '&origen=' + idNucleoOrigen);
+    return this.http.get(this.url_base + '/calculo_saltos?destino=' + idNucleoDestino + '&origen=' + idNucleoOrigen).pipe(retry(5));
   }
 
   obtenerBloquesDePasoPorIdLinea(idlinea: number) {
@@ -65,7 +66,7 @@ export class RutasService {
   }
 
   getTarifas() {
-    return this.http.get(this.url_base + '/tarifas_interurbanas');
+    return this.http.get(this.url_base + '/tarifas_interurbanas').pipe(retry(5));
   }
 
 }
