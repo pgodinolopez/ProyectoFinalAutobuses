@@ -11,7 +11,7 @@ import {
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 
 
-import { Platform, NavController } from "@ionic/angular";
+import { Platform, NavController, LoadingController } from "@ionic/angular";
 import { ParadasService } from '../servicios/paradas.service';
 import { Parada } from '../modelos/parada';
 import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
@@ -29,37 +29,54 @@ export class ParadasCercanasPage implements OnInit {
   localizacion = {latitud: null, longitud: null};
   contador:number = 0;
 
-  constructor(public platform: Platform, public nav: NavController, private paradasService: ParadasService, public geolocation: Geolocation, private androidPermissions: AndroidPermissions) {
+  constructor(public platform: Platform, public nav: NavController, private paradasService: ParadasService, public geolocation: Geolocation, private androidPermissions: AndroidPermissions, private loadingController: LoadingController) {
     this.listaParadas = [];
   }
 
   async obtenerParadas() {
-    this.paradasService.getParadas().subscribe(
-      (paradas) => {
+    
+    // const loading = await this.loadingController.create({});
+   
+    // loading.present().then(() => {
+    //    // do your stuffs backend call etc here
+    //    this.yourStuffs().then(() => {
+    //         // Whatever you have still things to do you could do here
+    //         // finally close loading 
+    //         loading.dismiss();
+    //    });
+    // });
+
+    await this.paradasService.getParadas().then(
+      (paradas:Parada[]) => {
         let paradasObtenidas = paradas['paradas'];
         // this.listaParadas = paradas['paradas'];
-        paradasObtenidas.forEach(parada => {
-          this.paradasService.getDatosParada(parada['idParada']).subscribe(
-            (datosParada) => {
-              if (datosParada.descripcion==='Autobús') {
-                this.listaParadas.push(datosParada);
-                
-              }
-            }
-          );
-        });
-        
-        console.log(this.listaParadas);
+        this.obtenerDatosParada(paradasObtenidas).then(()=>{
+          this.obtenerPosicionActual(this.listaParadas);        
+          console.log(this.listaParadas);
+        })
       }
     );
   }
- 
+  
+  async obtenerDatosParada(paradasObtenidas) {
+    await paradasObtenidas.forEach(parada => {
+      this.paradasService.getDatosParada(parada['idParada']).then(
+        (datosParada:Parada) => {
+          if (datosParada.descripcion==='Autobús') {
+            this.listaParadas.push(datosParada);
+            
+          }
+        }
+      );
+    });
+  }
+
   ngOnInit() {
     
     this.platform.ready().then( () => {
       this.obtenerParadas().then(
         ()=>{
-          this.obtenerPosicionActual();
+          // this.obtenerPosicionActual();
         }
       );
 			
@@ -84,7 +101,7 @@ export class ParadasCercanasPage implements OnInit {
 		
 	}
 
-  obtenerPosicionActual() {
+  obtenerPosicionActual(listaParadas) {
     this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION).then(
       result => {
         if (result.hasPermission) {
@@ -95,7 +112,7 @@ export class ParadasCercanasPage implements OnInit {
             console.log(this.localizacion.longitud)
             let coordinates: LatLng = new LatLng( this.localizacion.latitud, this.localizacion.longitud );
             console.log(coordinates)
-            this.loadMap(coordinates);
+            this.loadMap(coordinates, listaParadas);
           });
           
           
@@ -111,7 +128,7 @@ export class ParadasCercanasPage implements OnInit {
               console.log(this.localizacion.longitud)
               let coordinates: LatLng = new LatLng( this.localizacion.latitud, this.localizacion.longitud );
               console.log(coordinates)
-              this.loadMap(coordinates);
+              this.loadMap(coordinates, listaParadas);
             });
 
 
@@ -125,7 +142,7 @@ export class ParadasCercanasPage implements OnInit {
     )
   }
 
-  loadMap(coordinates: any) {
+  loadMap(coordinates: any, listaParadas) {
     
     let position = {
       target: coordinates,
@@ -162,14 +179,15 @@ export class ParadasCercanasPage implements OnInit {
       //   console.log(this.listaParadas.length);
         
       // });
-      this.obtenerMarcadores(map);
+      this.obtenerMarcadores(map, listaParadas);
     })
   }
 
-  obtenerMarcadores(mapa) {
+  obtenerMarcadores(mapa, listaParadas) {
     // tslint:disable-next-line:variable-name
-    for (let i = 0; i < this.listaParadas.length; i++) {
-      this.addMarcadores(this.listaParadas[i], mapa);
+    for (let i = 0; i < listaParadas.length; i++) {
+      this.addMarcadores(listaParadas[i], mapa);
+      console.log(listaParadas.length)
     }
   }
 
@@ -177,7 +195,7 @@ export class ParadasCercanasPage implements OnInit {
     const posicion = new LatLng(parada.latitud, parada.longitud);
     let opcionesMarcador: MarkerOptions = { position: posicion, title: parada.nombre, icon: "assets/images/marker.png" };
     const marcador = mapa.addMarker( opcionesMarcador );
-    console.log(this.listaParadas.length)
+    
   }
 
 }

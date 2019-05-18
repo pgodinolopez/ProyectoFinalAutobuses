@@ -16,11 +16,33 @@ export class ParadasService {
   constructor(private http: HttpClient) { }
 
   getParadas() {
-    return this.http.get<Parada[]>(this.url_base + '/paradas').pipe(retry(5));
+    // return this.http.get<Parada[]>(this.url_base + '/paradas').pipe(retry(5));
+    return new Promise((resolve, reject) => {
+      this.http.get<Parada>(this.url_base + '/paradas').pipe(retry(5))
+        .subscribe(
+         data => {
+          resolve(data)
+        },
+         error => {
+          reject(error);
+        },
+        );
+    });
   }
 
   getDatosParada(idParada: number) {
-    return this.http.get<Parada>(this.url_base + '/paradas/' + idParada).pipe(retry(5));
+    // return this.http.get<Parada>(this.url_base + '/paradas/' + idParada).pipe(retry(5));
+    return new Promise((resolve, reject) => {
+      this.http.get<Parada>(this.url_base + '/paradas/' + idParada).pipe(retry(5))
+        .subscribe(
+         data => {
+          resolve(data)
+        },
+         error => {
+          reject(error);
+        },
+        );
+    });
   }
 
 }
