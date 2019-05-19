@@ -102,13 +102,13 @@ export class RutaDetallePage implements OnInit {
         'geodesic': true
       });
       
-      // const posicionInicio = new LatLng(coordinates[0].lat, coordinates[0].lng);
-      // let opcionesMarcadorInicio: MarkerOptions = { position: posicionInicio, title: 'Salida', icon: "assets/images/marker.png" };
-      // const marcadorInicio = map.addMarker( opcionesMarcadorInicio );
+      const posicionInicio = new LatLng(parseFloat(coordenadasIda[0].lat), parseFloat(coordinates[0].lng));
+      let opcionesMarcadorInicio: MarkerOptions = { position: posicionInicio, title: 'Salida', icon: "assets/images/marker.png" };
+      const marcadorInicio = map.addMarker( opcionesMarcadorInicio );
 
-      // const posicionFin = new LatLng(coordinates[coordinates.length].lat, coordinates[coordinates.length].lng);
-      // let opcionesMarcadorFin: MarkerOptions = { position: posicionFin, title: 'Salida', icon: "assets/images/marker.png" };
-      // const marcadorFin = map.addMarker( opcionesMarcadorFin );
+      const posicionFin = new LatLng(parseFloat(coordenadasIda[Math.round(coordenadasIda.length-1)].lat), parseFloat(coordenadasIda[Math.round(coordenadasIda.length-1)].lng));
+      let opcionesMarcadorFin: MarkerOptions = { position: posicionFin, title: 'Llegada', icon: "assets/images/marker.png" };
+      const marcadorFin = map.addMarker( opcionesMarcadorFin );
       
     })
   }
