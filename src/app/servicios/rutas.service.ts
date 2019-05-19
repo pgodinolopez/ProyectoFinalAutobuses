@@ -24,6 +24,7 @@ export class RutasService {
   url_base = 'http://api.ctan.es/v1/Consorcios/7';
   url_horarios_lineas = '';
   url_información_lineas = this.url_base + '/lineas/';
+  horario: Horario;
 
   constructor(private http: HttpClient) { 
     
@@ -67,6 +68,14 @@ export class RutasService {
 
   getTarifas() {
     return this.http.get(this.url_base + '/tarifas_interurbanas').pipe(retry(5));
+  }
+
+  getHorarioDetalle() {
+    return this.horario;
+  }
+
+  setHorarioDetalle(horario: Horario) {
+    this.horario = horario;
   }
 
 }

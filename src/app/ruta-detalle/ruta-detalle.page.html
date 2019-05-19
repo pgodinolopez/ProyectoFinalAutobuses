@@ -1,0 +1,46 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>ruta-detalle</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-card>
+    <ion-card-content>
+      <ion-card-title>
+        {{horario.codigo}}
+      </ion-card-title>
+      <ion-list>
+        <ion-item>
+          
+          <p>Hora de salida: {{horario.horaSalida}}</p>
+        </ion-item>
+        
+        <ion-item>
+            
+            <p>Hora de llegada: {{horario.horaLlegada}}</p>
+        </ion-item>
+        
+        <ion-item>
+            
+            <p>Operador: {{horario.operadores}}</p>
+        </ion-item>
+
+        <ion-item>
+            
+            <p>Precio billete sencillo: {{horario.precio_billete_sencillo}}</p>
+        </ion-item>
+        
+        <ion-item>
+            
+          <p>Precio billete sencillo: {{horario.linea.pmr}}</p>
+      </ion-item>
+
+      </ion-list>
+      
+      
+
+    </ion-card-content>
+  </ion-card>
+  <div id="map" style="height: 100%; width: 100%"></div>
+</ion-content>

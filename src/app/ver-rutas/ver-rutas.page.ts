@@ -7,6 +7,7 @@ import { Nucleo } from '../modelos/nucleo';
 import { Bloque } from '../modelos/bloque';
 import { ToastController } from '@ionic/angular';
 import { format, subDays } from 'date-fns'
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-ver-rutas',
@@ -37,7 +38,7 @@ export class VerRutasPage implements OnInit {
   // municipioOrigen: Municipio;
   // municipioDestino: Municipio;
 
-  constructor(private rutasService: RutasService, public toastController: ToastController) { 
+  constructor(private rutasService: RutasService, public toastController: ToastController, private router: Router) { 
     this.adaptado_movilidad_reducida = false;
   }
 
@@ -224,6 +225,11 @@ export class VerRutasPage implements OnInit {
     }
     console.log(this.lista_horarios_final);
     // horario.operadores = this.operadores;  
+  }
+
+  irDetalleRuta(horario: Horario) {
+    this.rutasService.setHorarioDetalle(horario);
+    this.router.navigate(['/ruta-detalle/' + horario.idlinea]);
   }
 
   mostrarToast() {

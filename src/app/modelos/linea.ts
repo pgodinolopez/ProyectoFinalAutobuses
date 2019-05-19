@@ -7,7 +7,7 @@ export class Linea {
     hayNoticias: boolean;
     termometroIda: string;
     termometroVuelta: string;
-    polilinea: string;
+    polilinea: any;
     grosor: number;
     color: number;
     tieneIda: boolean;
