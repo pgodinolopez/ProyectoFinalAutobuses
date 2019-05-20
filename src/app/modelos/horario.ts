@@ -13,4 +13,5 @@ export class Horario {
     precio_billete_sencillo: number;
     pmr: boolean;
     linea: Linea;
+    horaSalidaDate: Date;
 }
