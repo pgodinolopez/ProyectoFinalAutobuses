@@ -100,6 +100,7 @@ export class VerRutasPage implements OnInit {
           }     
         });
       });
+      
   }
 
   buscarRutas() {
@@ -226,15 +227,29 @@ export class VerRutasPage implements OnInit {
       this.lista_horarios_final.push(horario);
     }
     
-   
-    console.log(toDate(parseInt(horario.horaSalida)));
+    
     this.lista_horarios_final.sort((a, b)=>{
-      if(parseInt(a.horaSalida)>parseInt(b.horaSalida)) {
+      let horaSalidaYMinutosA = a.horaSalida.replace(':', '.');
+      let horaSalidaYMinutosB = b.horaSalida.replace(':', '.');
+      let horaLlegadaYMinutosA = a.horaLlegada.replace(':', '.');
+      let horaLlegadaYMinutosB = b.horaLlegada.replace(':', '.');
+      console.log(horaSalidaYMinutosA)
+      console.log(horaSalidaYMinutosB)
+      if(parseInt(horaSalidaYMinutosA)>parseInt(horaSalidaYMinutosB)) {
         return 1;
       }
-      if(parseInt(a.horaSalida)<parseInt(b.horaSalida)) {
+      if(parseInt(horaSalidaYMinutosA)<parseInt(horaSalidaYMinutosB)) {
         return -1;
       }
+      // Si salen a la misma hora comparamos por hora de llegada
+      // if(parseInt(horaSalidaYMinutosA)==parseInt(horaSalidaYMinutosB)) {
+      //   if(parseInt(horaLlegadaYMinutosA)>parseInt(horaLlegadaYMinutosB)) {
+      //     return 1;
+      //   }
+      //   if(parseInt(horaLlegadaYMinutosA)<parseInt(horaLlegadaYMinutosB)) {
+      //     return -1;
+      //   }
+      // }
       return 0;
     });
      
