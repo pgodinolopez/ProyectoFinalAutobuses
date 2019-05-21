@@ -68,15 +68,6 @@ export class RutaDetallePage implements OnInit {
 
     console.log(coordenadasIda)
 
-    console.log(coordinates[0]);
-    console.log(coordinates[coordinates.length/2].lat)
-    console.log(coordinates[coordinates.length/2].lng)
-    console.log(parseFloat(coordinates[coordinates.length/2].lat))
-    console.log(parseFloat(coordinates[coordinates.length/2].lng))
-
-    let latInicial = coordinates[coordinates.length/2].lat
-    let longInicial = coordinates[coordinates.length/2].lng
-
     let mapOptions: GoogleMapOptions = {
       camera: {
           target: {
