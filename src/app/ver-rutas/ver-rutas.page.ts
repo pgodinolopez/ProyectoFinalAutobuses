@@ -35,6 +35,7 @@ export class VerRutasPage implements OnInit {
   adaptado_movilidad_reducida: boolean;
   lineaObtenida: Linea;
   precio_billete_sencillo: number;
+  hora_filtro: any;
   // municipioOrigen: Municipio;
   // municipioDestino: Municipio;
 
@@ -54,6 +55,7 @@ export class VerRutasPage implements OnInit {
 
   obtenerHorarios() {
     let fecha = new Date(this.fecha_seleccionada);
+    console.log(this.hora_filtro);
     let dia_semana = format(fecha, "iiii"); 
     this.rutasService.getHorarios(this.nucleoDestino.idNucleo, this.nucleoOrigen.idNucleo).subscribe(
       (horarios)=>{
@@ -199,7 +201,9 @@ export class VerRutasPage implements OnInit {
 
   obtenerDatosHorarioPorLinea(horario: Horario, linea: Linea) {
     // this.obtenerInformacionLineas(parseInt(horario.idlinea), horario);
-            
+
+
+
     if (linea.pmr === 'Adaptada a personas con movilidad reducida') {
       horario.pmr = true;
     } else {
@@ -213,48 +217,103 @@ export class VerRutasPage implements OnInit {
     if (horario.horaSalida === '--') {
       horario.horaSalida = horario.horas[1];
     }
+    
     horario.horaLlegada = horario.horas[horario.horas.length-1];
     if (horario.horaLlegada === '--') {
       horario.horaLlegada = horario.horas[horario.horas.length-2];
     }
-    horario.precio_billete_sencillo = this.precio_billete_sencillo;
-    horario.horaSalidaDate = toDate(parseInt(horario.horaSalida))
-    // this.obtenerPrecio(this.nucleoDestino.idNucleo, this.nucleoOrigen.idNucleo, horario);
-    console.log(horario)
-    if (this.adaptado_movilidad_reducida == true && horario.pmr) {
-      this.lista_horarios_final.push(horario);
-    } else if (!this.adaptado_movilidad_reducida) {
-      this.lista_horarios_final.push(horario);
-    }
     
-    
-    this.lista_horarios_final.sort((a, b)=>{
-      let horaSalidaYMinutosA = a.horaSalida.replace(':', '.');
-      let horaSalidaYMinutosB = b.horaSalida.replace(':', '.');
-      let horaLlegadaYMinutosA = a.horaLlegada.replace(':', '.');
-      let horaLlegadaYMinutosB = b.horaLlegada.replace(':', '.');
-      console.log(horaSalidaYMinutosA)
-      console.log(horaSalidaYMinutosB)
-      if(parseInt(horaSalidaYMinutosA)>parseInt(horaSalidaYMinutosB)) {
-        return 1;
+    if (this.hora_filtro != undefined) {
+      let hora = new Date(this.hora_filtro);
+      let horaAFiltrar = format(hora, "H");
+      let minutosAFiltrar = format(hora, "m");
+      let horaYMinutosAFiltrar = horaAFiltrar + '.' + minutosAFiltrar;
+      let horaSalidaYMinutos = horario.horaSalida.replace(':', '.');
+      
+      if (parseFloat(horaSalidaYMinutos) >= parseFloat(horaYMinutosAFiltrar)) {
+        console.log(horaAFiltrar)
+      console.log(minutosAFiltrar)
+      
+      horario.precio_billete_sencillo = this.precio_billete_sencillo;
+      horario.horaSalidaDate = toDate(parseInt(horario.horaSalida))
+      // this.obtenerPrecio(this.nucleoDestino.idNucleo, this.nucleoOrigen.idNucleo, horario);
+      console.log(horario)
+      if (this.adaptado_movilidad_reducida == true && horario.pmr) {
+        this.lista_horarios_final.push(horario);
+      } else if (!this.adaptado_movilidad_reducida) {
+        this.lista_horarios_final.push(horario);
+      }    
+
+      this.lista_horarios_final.sort((a, b)=>{
+        let horaSalidaYMinutosA = a.horaSalida.replace(':', '.');
+        let horaSalidaYMinutosB = b.horaSalida.replace(':', '.');
+        let horaLlegadaYMinutosA = a.horaLlegada.replace(':', '.');
+        let horaLlegadaYMinutosB = b.horaLlegada.replace(':', '.');
+        console.log(horaSalidaYMinutosA)
+        console.log(horaSalidaYMinutosB)
+        if(parseFloat(horaSalidaYMinutosA)>parseFloat(horaSalidaYMinutosB)) {
+          return 1;
+        }
+        if(parseFloat(horaSalidaYMinutosA)<parseFloat(horaSalidaYMinutosB)) {
+          return -1;
+        }
+        // Si salen a la misma hora comparamos por hora de llegada
+        if(parseFloat(horaSalidaYMinutosA)==parseFloat(horaSalidaYMinutosB)) {
+          if(parseFloat(horaLlegadaYMinutosA)>parseFloat(horaLlegadaYMinutosB)) {
+            return 1;
+          }
+          if(parseFloat(horaLlegadaYMinutosA)<parseFloat(horaLlegadaYMinutosB)) {
+            return -1;
+          }
+        }
+        return 0;
+        });
+     
+        console.log(this.lista_horarios_final);
       }
-      if(parseInt(horaSalidaYMinutosA)<parseInt(horaSalidaYMinutosB)) {
-        return -1;
-      }
-      // Si salen a la misma hora comparamos por hora de llegada
-      // if(parseInt(horaSalidaYMinutosA)==parseInt(horaSalidaYMinutosB)) {
-      //   if(parseInt(horaLlegadaYMinutosA)>parseInt(horaLlegadaYMinutosB)) {
-      //     return 1;
-      //   }
-      //   if(parseInt(horaLlegadaYMinutosA)<parseInt(horaLlegadaYMinutosB)) {
-      //     return -1;
-      //   }
-      // }
-      return 0;
-    });
+
+      
+
+    } else {
+
+      horario.precio_billete_sencillo = this.precio_billete_sencillo;
+      horario.horaSalidaDate = toDate(parseInt(horario.horaSalida))
+      // this.obtenerPrecio(this.nucleoDestino.idNucleo, this.nucleoOrigen.idNucleo, horario);
+      console.log(horario)
+      if (this.adaptado_movilidad_reducida == true && horario.pmr) {
+        this.lista_horarios_final.push(horario);
+      } else if (!this.adaptado_movilidad_reducida) {
+        this.lista_horarios_final.push(horario);
+      }    
+
+      this.lista_horarios_final.sort((a, b)=>{
+        let horaSalidaYMinutosA = a.horaSalida.replace(':', '.');
+        let horaSalidaYMinutosB = b.horaSalida.replace(':', '.');
+        let horaLlegadaYMinutosA = a.horaLlegada.replace(':', '.');
+        let horaLlegadaYMinutosB = b.horaLlegada.replace(':', '.');
+        console.log(horaSalidaYMinutosA)
+        console.log(horaSalidaYMinutosB)
+        if(parseFloat(horaSalidaYMinutosA)>parseFloat(horaSalidaYMinutosB)) {
+          return 1;
+        }
+        if(parseFloat(horaSalidaYMinutosA)<parseFloat(horaSalidaYMinutosB)) {
+          return -1;
+        }
+        // Si salen a la misma hora comparamos por hora de llegada
+        if(parseFloat(horaSalidaYMinutosA)==parseFloat(horaSalidaYMinutosB)) {
+          if(parseFloat(horaLlegadaYMinutosA)>parseFloat(horaLlegadaYMinutosB)) {
+            return 1;
+          }
+          if(parseFloat(horaLlegadaYMinutosA)<parseFloat(horaLlegadaYMinutosB)) {
+            return -1;
+          }
+        }
+        return 0;
+      });
      
     console.log(this.lista_horarios_final);
     // horario.operadores = this.operadores;  
+    }
   }
 
 

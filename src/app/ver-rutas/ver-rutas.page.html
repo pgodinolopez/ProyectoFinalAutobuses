@@ -38,6 +38,12 @@
     <ion-toggle [(ngModel)]="adaptado_movilidad_reducida" (ionChange)="toggle_pmr_cambiado($event)"></ion-toggle>
   </ion-item>
 
+  <ion-item>
+    <ion-label>Hora de salida</ion-label>
+    <ion-datetime [(ngModel)]="hora_filtro" displayFormat="HH:mm" minuteValues="0,5,10,15,20,25,30,35,40,45,50,55" doneText="Aceptar" cancelText="Cancelar"></ion-datetime>
+  </ion-item>
+  
+
   <ion-button (click)="buscarRutas()" color="primary">Buscar</ion-button>
   <ng-template [ngIf]="modo_autobus">
     <ion-card *ngFor="let horario of lista_horarios_final" (click)='irDetalleRuta(horario)'>
@@ -48,7 +54,7 @@
 
       <ion-card-content>
         <ion-item lines="none">
-          <ion-label>Id línea: {{horario.idlinea}}</ion-label>
+          <ion-label>{{origen}} - {{destino}}</ion-label>
           <ion-label>
             {{horario.horaSalida}}
             <br>
@@ -56,7 +62,7 @@
             <br>
           </ion-label>
         </ion-item>
-        <ion-item><ion-label>Empresa: {{horario.operadores}}<br>{{horario.precio_billete_sencillo | number : '1.2-2'}} €</ion-label></ion-item>
+        <ion-item><ion-label>{{horario.operadores}}<br>{{horario.precio_billete_sencillo | number : '1.2-2'}} €</ion-label></ion-item>
       </ion-card-content>
     </ion-card>
   </ng-template>
