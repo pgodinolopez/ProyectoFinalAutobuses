@@ -1,0 +1,22 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>rutasFavoritas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-card *ngFor="let horario of listaHorarios" (click)='irDetalleRuta(horario)'>
+      <ion-card-content>
+        <ion-item lines="none">
+          <ion-label>{{horario.origen}} - {{horario.destino}}</ion-label>
+          <ion-label>
+            {{horario.hora_salida}}
+            <br>
+            {{horario.hora_llegada}}
+            <br>
+          </ion-label>
+        </ion-item>
+        <ion-item><ion-label>{{horario.operadores}}<br>{{horario.precio_billete_sencillo | number : '1.2-2'}} €</ion-label></ion-item>
+      </ion-card-content>
+    </ion-card>
+</ion-content>

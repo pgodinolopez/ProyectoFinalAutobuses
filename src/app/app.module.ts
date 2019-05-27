@@ -13,12 +13,13 @@ import { HttpClientModule } from '@angular/common/http';
 import {Geolocation} from '@ionic-native/geolocation/ngx';
 import { GoogleMaps } from '@ionic-native/google-maps';
 import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
+import { IonicStorageModule } from '@ionic/storage';
 
 
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
-  imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule, HttpClientModule],
+  imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule, HttpClientModule, IonicStorageModule.forRoot()],
   providers: [
     StatusBar,
     SplashScreen,

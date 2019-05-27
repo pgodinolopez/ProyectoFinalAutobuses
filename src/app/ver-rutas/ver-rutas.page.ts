@@ -222,6 +222,9 @@ export class VerRutasPage implements OnInit {
     if (horario.horaLlegada === '--') {
       horario.horaLlegada = horario.horas[horario.horas.length-2];
     }
+
+    horario.origen = this.origen;
+    horario.destino = this.destino;
     
     if (this.hora_filtro != undefined) {
       let hora = new Date(this.hora_filtro);
@@ -235,7 +238,6 @@ export class VerRutasPage implements OnInit {
       console.log(minutosAFiltrar)
       
       horario.precio_billete_sencillo = this.precio_billete_sencillo;
-      horario.horaSalidaDate = toDate(parseInt(horario.horaSalida))
       // this.obtenerPrecio(this.nucleoDestino.idNucleo, this.nucleoOrigen.idNucleo, horario);
       console.log(horario)
       if (this.adaptado_movilidad_reducida == true && horario.pmr) {
@@ -277,7 +279,6 @@ export class VerRutasPage implements OnInit {
     } else {
 
       horario.precio_billete_sencillo = this.precio_billete_sencillo;
-      horario.horaSalidaDate = toDate(parseInt(horario.horaSalida))
       // this.obtenerPrecio(this.nucleoDestino.idNucleo, this.nucleoOrigen.idNucleo, horario);
       console.log(horario)
       if (this.adaptado_movilidad_reducida == true && horario.pmr) {
@@ -320,7 +321,11 @@ export class VerRutasPage implements OnInit {
 
   irDetalleRuta(horario: Horario) {
     this.rutasService.setHorarioDetalle(horario);
-    this.router.navigate(['/ruta-detalle/' + horario.idlinea]);
+    this.router.navigate(['/tabs/ver-rutas/ruta-detalle/' + horario.idlinea]);
+  }
+
+  irAPaginaLogin() {
+    this.router.navigate(['/tabs/login']);
   }
 
   mostrarToast() {

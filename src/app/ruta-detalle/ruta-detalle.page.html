@@ -5,42 +5,60 @@
 </ion-header>
 
 <ion-content>
-  <ion-card>
-    <ion-card-content>
-      <ion-card-title>
-        {{horario.codigo}}
-      </ion-card-title>
-      <ion-list>
-        <ion-item>
+  <!-- <ion-scroll scrollX="true"> -->
+  
+  
+    
+    <div class="divDetalle">
+      <ion-card>
+        <ion-card-content>
+          <ion-card-title>
+            {{horario.codigo}}
+          </ion-card-title>
+          <ion-list>
+            <ion-item>
+              
+              <p>Hora de salida: {{horario.horaSalida}}</p>
+            </ion-item>
+            
+            <ion-item>
+                
+                <p>Hora de llegada: {{horario.horaLlegada}}</p>
+            </ion-item>
+            
+            <ion-item>
+                
+                <p>Operador: {{horario.operadores}}</p>
+            </ion-item>
+  
+            <ion-item>
+                
+                <p>Precio billete sencillo: {{horario.precio_billete_sencillo}}</p>
+            </ion-item>
+            
+            <ion-item>
+                
+              <p>Precio billete sencillo: {{horario.linea.pmr}}</p>
+          </ion-item>
+  
+          </ion-list>
           
-          <p>Hora de salida: {{horario.horaSalida}}</p>
-        </ion-item>
-        
-        <ion-item>
-            
-            <p>Hora de llegada: {{horario.horaLlegada}}</p>
-        </ion-item>
-        
-        <ion-item>
-            
-            <p>Operador: {{horario.operadores}}</p>
-        </ion-item>
+          
+  
+        </ion-card-content>
+      </ion-card>
+    </div>
 
-        <ion-item>
-            
-            <p>Precio billete sencillo: {{horario.precio_billete_sencillo}}</p>
-        </ion-item>
-        
-        <ion-item>
-            
-          <p>Precio billete sencillo: {{horario.linea.pmr}}</p>
-      </ion-item>
+    <div class="mapDiv">
+      <div id="map" style="width: 100%; height: 100%;"></div>
+    </div>
+    
+    <ion-fab vertical="center" horizontal="end" edge slot="fixed">
+      <ion-fab-button (click)='addFavoritos()'>
+        <ion-icon name="heart"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
 
-      </ion-list>
-      
-      
-
-    </ion-card-content>
-  </ion-card>
-  <div id="map" style="height: 100%; width: 100%"></div>
+  <!-- </ion-scroll> -->
+  
 </ion-content>

@@ -5,6 +5,7 @@ import { Horario } from '../modelos/horario';
 import { GoogleMaps, GoogleMapsEvent, LatLng, GoogleMapOptions, MarkerOptions } from '@ionic-native/google-maps';
 import { Linea } from '../modelos/linea';
 import { Platform } from "@ionic/angular";
+import { Storage } from '@ionic/storage';
 @Component({
   selector: 'app-ruta-detalle',
   templateUrl: './ruta-detalle.page.html',
@@ -14,9 +15,11 @@ export class RutaDetallePage implements OnInit {
 
   idlinea: any; 
   horario: Horario;
+  linea: Linea;
   map: any;
+  token: string = '';
 
-  constructor(private route: ActivatedRoute, private rutasService: RutasService, public platform: Platform) {
+  constructor(private route: ActivatedRoute, private rutasService: RutasService, public platform: Platform, private storage: Storage) {
 
   }
 
@@ -29,7 +32,7 @@ export class RutaDetallePage implements OnInit {
     this.idlinea = this.route.snapshot.paramMap.get('idlinea');
     this.rutasService.getDatosLineaPorId(this.idlinea).subscribe(
       (lineaObtenida) => {
-
+        this.linea = lineaObtenida;
       }
     );
 
@@ -102,6 +105,20 @@ export class RutaDetallePage implements OnInit {
       const marcadorFin = map.addMarker( opcionesMarcadorFin );
       
     })
+  }
+
+  addFavoritos() {
+    let token = this.storage.get('token').then(
+      (token) => {
+        this.token = token.token;
+        console.log(this.token)
+        this.rutasService.postRutaFavorita(token.token, this.horario).subscribe(
+          () => {
+            
+          }
+        );
+      }
+    );
   }
 
 }

@@ -25,6 +25,8 @@ export class RutasService {
   url_horarios_lineas = '';
   url_información_lineas = this.url_base + '/lineas/';
   horario: Horario;
+  url_base_api_rest = 'http://127.0.0.1:8000/api/v1';
+  url_rutas_favoritas = this.url_base_api_rest + '/rutas_favoritas';
 
   constructor(private http: HttpClient) { 
     
@@ -76,6 +78,15 @@ export class RutasService {
 
   setHorarioDetalle(horario: Horario) {
     this.horario = horario;
+  }
+
+  getRutasFavoritas(token: string) {
+    return this.http.get<Horario[]>(this.url_rutas_favoritas, {headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token}});
+  }
+
+  postRutaFavorita(token: string, horario: Horario) {
+    console.log(token)
+    return this.http.post<Horario>(this.url_rutas_favoritas, horario, {headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token}});
   }
 
 }

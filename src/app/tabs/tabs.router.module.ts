@@ -13,7 +13,11 @@ const routes: Routes = [
           {
             path: '',
             loadChildren: '../ver-rutas/ver-rutas.module#VerRutasPageModule'
-          }
+          },
+          {
+            path: 'ruta-detalle/:idlinea',
+            loadChildren: '../ruta-detalle/ruta-detalle.module#RutaDetallePageModule'
+          },
         ]
       },
       {
@@ -25,15 +29,33 @@ const routes: Routes = [
           }
         ]
       },
-      // {
-      //   path: 'tab3',
-      //   children: [
-      //     {
-      //       path: '',
-      //       loadChildren: '../tab3/tab3.module#Tab3PageModule'
-      //     }
-      //   ]
-      // },
+      {
+        path: 'rutas-favoritas',
+        children: [
+          {
+            path: '',
+            loadChildren: '../rutas-favoritas/rutas-favoritas.module#RutasFavoritasPageModule'
+          }
+        ]
+      },
+      {
+        path: 'login',
+        children: [
+          {
+            path: '',
+            loadChildren: '../login/login.module#LoginPageModule'
+          }
+        ]
+      },
+      {
+        path: 'registro-usuario',
+        children: [
+          {
+            path: '',
+            loadChildren: '../registro-usuario/registro-usuario.module#RegistroUsuarioPageModule'
+          }
+        ]
+      },
       {
         path: '',
         redirectTo: '/tabs/ver-rutas',
