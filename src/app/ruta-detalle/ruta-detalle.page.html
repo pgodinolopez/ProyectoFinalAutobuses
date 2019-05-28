@@ -54,9 +54,12 @@
     </div>
     
     <ion-fab vertical="center" horizontal="end" edge slot="fixed">
-      <ion-fab-button (click)='addFavoritos()'>
+      <ion-fab-button (click)='addFavoritos()' *ngIf="!rutaFavorita">
         <ion-icon name="heart"></ion-icon>
       </ion-fab-button>
+      <ion-fab-button (click)='borrarHorarioFavorito()' *ngIf="rutaFavorita">
+          <ion-icon name="heart"></ion-icon>
+        </ion-fab-button>
     </ion-fab>
 
   <!-- </ion-scroll> -->

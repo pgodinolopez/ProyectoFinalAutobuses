@@ -18,6 +18,8 @@ export class RutaDetallePage implements OnInit {
   linea: Linea;
   map: any;
   token: string = '';
+  listaHorarios: Horario[];
+  rutaFavorita: boolean = false;
 
   constructor(private route: ActivatedRoute, private rutasService: RutasService, public platform: Platform, private storage: Storage) {
 
@@ -25,6 +27,7 @@ export class RutaDetallePage implements OnInit {
 
   ngOnInit() {
     this.horario = this.rutasService.getHorarioDetalle();
+
     console.log(this.horario)
     console.log(this.horario.linea.polilinea);
     
@@ -35,9 +38,59 @@ export class RutaDetallePage implements OnInit {
         this.linea = lineaObtenida;
       }
     );
+  }
 
+  ionViewDidEnter() {
     
+  }
 
+  obtenerRutasFavoritas(token: string) {
+    this.rutasService.getRutasFavoritas(token).subscribe(
+      (respuesta)=>{
+        console.log(respuesta)
+        this.listaHorarios = respuesta['data']; 
+        if (this.listaHorarios.length==0) {
+          this.rutasService.postRutaFavorita(token, this.horario).subscribe(
+            () => {
+              
+            }
+          );
+          alert('Ruta añadida a favoritos')
+
+        } else {
+          let horarioPulsado = this.rutasService.getHorarioDetalle();
+          for (let i = 0; i < this.listaHorarios.length; i++) {
+            if (horarioPulsado.idlinea == this.listaHorarios[i].idlinea && horarioPulsado.codigo == this.listaHorarios[i].codigo && 
+              horarioPulsado.origen == this.listaHorarios[i].origen && horarioPulsado.destino == this.listaHorarios[i].destino && horarioPulsado.operadores == this.listaHorarios[i].operadores && 
+              horarioPulsado.horaSalida == this.listaHorarios[i]["hora_salida"] && horarioPulsado.horaLlegada == this.listaHorarios[i]["hora_llegada"]
+              ) {
+                // La ruta es favorita
+                this.borrarHorarioFavorito(token, this.listaHorarios[i]["id"]);
+                alert('Ruta borrada de favoritos')
+                break;
+              } else {
+                // La ruta no es favorita
+                console.log('no favorita');
+                this.rutasService.postRutaFavorita(token, this.horario).subscribe(
+                  () => {
+                    
+                  }
+                );
+                alert('Ruta añadida a favoritos')
+                break;
+              }
+          };
+        }
+      }, error => {
+      console.log('error', error['error']);
+      if (error['error']['message']=="Expired JWT Token") {
+        let token = {
+          'token': this.token,
+          'valido': false
+        }
+        this.storage.set('token', token);
+      } 
+    });
   }
 
   ngOnDestroy() {
@@ -112,11 +165,16 @@ export class RutaDetallePage implements OnInit {
       (token) => {
         this.token = token.token;
         console.log(this.token)
-        this.rutasService.postRutaFavorita(token.token, this.horario).subscribe(
-          () => {
-            
-          }
-        );
+        this.obtenerRutasFavoritas(this.token);
+        
+      }
+    );
+  }
+
+  borrarHorarioFavorito(token: string, id: number) {
+    this.rutasService.deleteRutaFavorita(token, id).subscribe(
+      () => {
+
       }
     );
   }

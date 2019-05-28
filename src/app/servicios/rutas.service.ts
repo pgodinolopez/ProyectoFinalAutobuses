@@ -89,4 +89,8 @@ export class RutasService {
     return this.http.post<Horario>(this.url_rutas_favoritas, horario, {headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token}});
   }
 
+  deleteRutaFavorita(token: string, id: number) {
+    return this.http.delete(this.url_rutas_favoritas + '/' + id, {headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token}});
+  }
+
 }

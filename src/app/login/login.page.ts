@@ -11,9 +11,11 @@ import { Storage } from '@ionic/storage';
 })
 export class LoginPage implements OnInit {
 
-  usuario: Usuario = new Usuario('', '', '', '');
+  usuario: Usuario = new Usuario('', '', '', '');;
 
-  constructor(private autenticacion_service: AutenticacionService, private router: Router, private storage: Storage) { }
+  constructor(private autenticacion_service: AutenticacionService, private router: Router, private storage: Storage) { 
+    
+  }
 
   ngOnInit() {
     let tokenInicial = this.storage.get('token').then(

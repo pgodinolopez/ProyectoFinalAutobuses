@@ -43,7 +43,7 @@ export class VerRutasPage implements OnInit {
     'token': '',
     'valido': false,
   };
-  filtosExpandidos: boolean = false;
+  filtrosExpandidos: boolean = false;
 
   constructor(private rutasService: RutasService, public toastController: ToastController, private router: Router, private storage: Storage, private actionSheetController: ActionSheetController) { 
     this.adaptado_movilidad_reducida = false;
@@ -380,10 +380,10 @@ export class VerRutasPage implements OnInit {
   }
 
   expandirObjeto(): void {
-    if (this.filtosExpandidos) {
-      this.filtosExpandidos = false;
+    if (this.filtrosExpandidos) {
+      this.filtrosExpandidos = false;
     } else {
-        this.filtosExpandidos = true; 
+        this.filtrosExpandidos = true; 
       
     }
   }
