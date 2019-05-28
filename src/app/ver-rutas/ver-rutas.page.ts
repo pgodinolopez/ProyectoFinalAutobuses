@@ -5,9 +5,10 @@ import { Linea } from '../modelos/linea';
 import { Municipio } from '../modelos/municipio';
 import { Nucleo } from '../modelos/nucleo';
 import { Bloque } from '../modelos/bloque';
-import { ToastController } from '@ionic/angular';
+import { ToastController, ActionSheetController } from '@ionic/angular';
 import { format, subDays, parse, parseISO, toDate } from 'date-fns'
 import { Router } from '@angular/router';
+import { Storage } from '@ionic/storage';
 
 @Component({
   selector: 'app-ver-rutas',
@@ -38,14 +39,28 @@ export class VerRutasPage implements OnInit {
   hora_filtro: any;
   // municipioOrigen: Municipio;
   // municipioDestino: Municipio;
+  token: any = {
+    'token': '',
+    'valido': false,
+  };
+  filtosExpandidos: boolean = false;
 
-  constructor(private rutasService: RutasService, public toastController: ToastController, private router: Router) { 
+  constructor(private rutasService: RutasService, public toastController: ToastController, private router: Router, private storage: Storage, private actionSheetController: ActionSheetController) { 
     this.adaptado_movilidad_reducida = false;
   }
 
   ngOnInit() {
     // this.obtenerMunicipios();
     this.obtenerNucleos();
+    
+  }
+
+  ionViewDidEnter() {
+    let token = this.storage.get('token').then(
+      (token) => {
+        this.token = token;
+      }
+    );
   }
 
   toggle_pmr_cambiado($event) {
@@ -337,6 +352,40 @@ export class VerRutasPage implements OnInit {
       console.log(toastData);
       toastData.present();
     });
+  }
+
+  async mostrarMenuUsuario() {
+    const actionSheet = await this.actionSheetController.create({
+      header: 'Usuario',
+      buttons: [{
+        text: 'Cerrar Sesión',
+        icon: 'power',
+        handler: () => {
+          this.token = {
+            'token': '',
+            'valido': false,
+          };
+          this.storage.set('token', this.token);
+          this.router.navigate(['']);
+        }
+      }, {
+        text: 'Cancelar',
+        icon: 'close',
+        role: 'cancel',
+        handler: () => {
+        }
+      }]
+    });
+    await actionSheet.present();
+  }
+
+  expandirObjeto(): void {
+    if (this.filtosExpandidos) {
+      this.filtosExpandidos = false;
+    } else {
+        this.filtosExpandidos = true; 
+      
+    }
   }
 
 }

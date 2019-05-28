@@ -11,7 +11,7 @@ import { Storage } from '@ionic/storage';
   templateUrl: './rutas-favoritas.page.html',
   styleUrls: ['./rutas-favoritas.page.scss'],
 })
-export class RutasFavoritasPage implements OnInit {
+export class RutasFavoritasPage {
 
   listaHorarios: Horario[];
   token: string = '';
@@ -19,7 +19,7 @@ export class RutasFavoritasPage implements OnInit {
 
   constructor(private rutasService: RutasService, private autenticacionService: AutenticacionService, private router: Router, private storage: Storage, public toastController: ToastController) { }
 
-  ngOnInit() {
+  ionViewDidEnter() {
     let token = this.storage.get('token').then(
       (token) => {
         this.token = token.token;

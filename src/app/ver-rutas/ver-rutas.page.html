@@ -2,7 +2,8 @@
   <ion-toolbar>
     <ion-item lines="none">
       <ion-title>verRutas</ion-title>
-      <ion-button expand="block" fill="outline" item-right (click)='irAPaginaLogin()'>Iniciar Sesión</ion-button>  
+      <ion-button *ngIf="!token.valido" expand="block" fill="outline" item-right (click)='irAPaginaLogin()'>Iniciar Sesión</ion-button>  
+      <ion-icon name="contact" *ngIf="token.valido" expand="block" fill="outline" item-right (click)='mostrarMenuUsuario()'></ion-icon>  
     </ion-item>
   </ion-toolbar>
 </ion-header>
@@ -35,7 +36,15 @@
       month-names="Enero, Febrero, Marzo, Abril, Mayo, Junio, Julio, Agosto, Septiembre, Octubre, Noviembre, Diciembre">
     </ion-datetime>
   </ion-item>
+  
+  <p (click)="expandirObjeto()">Filtros</p>
 
+  <app-expandable expandHeight="100px" [expanded]="filtrosExpandidos">
+      <p>
+        Hello there.
+      </p>
+      
+    </app-expandable>
   <ion-item>
     <ion-label>Adaptado a personas con movilidad reducida</ion-label>
     <ion-toggle [(ngModel)]="adaptado_movilidad_reducida" (ionChange)="toggle_pmr_cambiado($event)"></ion-toggle>

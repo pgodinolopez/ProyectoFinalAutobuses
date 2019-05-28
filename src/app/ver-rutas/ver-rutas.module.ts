@@ -6,6 +6,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { VerRutasPage } from './ver-rutas.page';
+import { ExpandableComponent } from '../componentes/expandable/expandable.component';
 
 const routes: Routes = [
   {
@@ -21,6 +22,6 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [VerRutasPage]
+  declarations: [VerRutasPage, ExpandableComponent]
 })
 export class VerRutasPageModule {}
