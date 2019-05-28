@@ -17,6 +17,10 @@ import { Storage } from '@ionic/storage';
 })
 export class VerRutasPage implements OnInit {
 
+  token: any = {
+    'token': '',
+    'valido': false,
+  };
   municipios: Municipio[];
   nucleos: Nucleo[];
   nucleoOrigen: Nucleo;
@@ -39,10 +43,7 @@ export class VerRutasPage implements OnInit {
   hora_filtro: any;
   // municipioOrigen: Municipio;
   // municipioDestino: Municipio;
-  token: any = {
-    'token': '',
-    'valido': false,
-  };
+  
   filtrosExpandidos: boolean = false;
 
   constructor(private rutasService: RutasService, public toastController: ToastController, private router: Router, private storage: Storage, private actionSheetController: ActionSheetController) { 
@@ -58,9 +59,10 @@ export class VerRutasPage implements OnInit {
   ionViewDidEnter() {
     let token = this.storage.get('token').then(
       (token) => {
-        this.token = token;
+        if(token!=null) {
+          this.token = token;
       }
-    );
+    });
   }
 
   toggle_pmr_cambiado($event) {
