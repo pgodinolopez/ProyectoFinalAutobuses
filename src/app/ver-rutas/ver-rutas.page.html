@@ -1,15 +1,14 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-item lines="none">
-      <ion-title>verRutas</ion-title>
+  <ion-toolbar class="barra_superior">
+    <ion-item lines="none" class="barra_superior">
+      <ion-title>Buscar rutas</ion-title>
       <ion-button *ngIf="!token.valido" expand="block" fill="outline" item-right (click)='irAPaginaLogin()' class="boton_login">Iniciar Sesión</ion-button>  
-      <ion-icon name="contact" *ngIf="token.valido" expand="block" fill="outline" item-right (click)='mostrarMenuUsuario()'></ion-icon>  
+      <ion-icon name="contact" size="large" *ngIf="token.valido" expand="block" fill="outline" item-right (click)='mostrarMenuUsuario()'></ion-icon>  
     </ion-item>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-
   <ion-item>
     <ion-label>Origen</ion-label>
     <ion-select  okText="Aceptar" cancelText="Cancelar" [(ngModel)]="origen">

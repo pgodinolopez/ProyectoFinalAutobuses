@@ -3,7 +3,12 @@
 }
 
 .boton_login {
-    max-height: 25px;
+    max-height: 26px;
+    min-height: 26px;
     max-width: 119.443px;
     font-size: 12px;
+}
+
+.barra_superior{
+    --background: #fff2df;
 }
