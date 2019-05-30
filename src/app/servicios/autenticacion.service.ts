@@ -9,8 +9,8 @@ import { Storage } from '@ionic/storage';
 })
 export class AutenticacionService {
 
-  url_base = 'http://127.0.0.1:8000/api';
-  // url_base = 'http://192.168.0.159:8000/api';
+  // url_base = 'http://127.0.0.1:8000/api';
+  url_base = 'http://192.168.0.161:8000/api';
   url_login = this.url_base + '/login_check';
   url_registro = this.url_base + '/register';
 

@@ -2,61 +2,63 @@
   <ion-toolbar class="barra_superior">
     <ion-item lines="none" class="barra_superior">
       <ion-title>Buscar rutas</ion-title>
-      <ion-button *ngIf="!token.valido" expand="block" fill="outline" item-right (click)='irAPaginaLogin()' class="boton_login">Iniciar Sesión</ion-button>  
+      <ion-button *ngIf="!token.valido" expand="block" fill="outline" item-right (click)='irAPaginaLogin()' class="boton_login_toolbar">Iniciar Sesión</ion-button>  
       <ion-icon name="contact" size="large" *ngIf="token.valido" expand="block" fill="outline" item-right (click)='mostrarMenuUsuario()'></ion-icon>  
     </ion-item>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-item>
-    <ion-label>Origen</ion-label>
-    <ion-select  okText="Aceptar" cancelText="Cancelar" [(ngModel)]="origen">
-      <ion-select-option *ngFor="let nucleo of nucleos" value="{{nucleo.nombre}}">{{nucleo.nombre}}</ion-select-option>  
-    </ion-select>
-  </ion-item>
-
-  <ion-item>
-    <ion-label>Destino</ion-label>
-    <ion-select  okText="Aceptar" cancelText="Cancelar" [(ngModel)]="destino">
-      <ion-select-option *ngFor="let nucleo of nucleos" value="{{nucleo.nombre}}">{{nucleo.nombre}}</ion-select-option>  
-    </ion-select>
-  </ion-item>
-
-  <ion-item>
-    <ion-label>Fecha</ion-label>
-    <ion-datetime
-      [(ngModel)]="fecha_seleccionada"
-      doneText="Aceptar"
-      cancelText="Cancelar" 
-      pickerFormat="DDD DD MMMM" 
-      display-format="DDDD DD de MMMM"
-      day-names="Domingo, Lunes, Martes, Miércoles, Jueves, Viernes, Sábado"
-      month-names="Enero, Febrero, Marzo, Abril, Mayo, Junio, Julio, Agosto, Septiembre, Octubre, Noviembre, Diciembre">
-    </ion-datetime>
-  </ion-item>
-  
-  <ion-item (click)="expandirObjeto()" style="border-bottom: 1px solid #dedede !important" lines=none>
-    <ion-label>Filtros</ion-label>
-    <ion-icon name="arrow-down" *ngIf="filtrosExpandidos"></ion-icon>
-    <ion-icon name="arrow-forward" *ngIf="!filtrosExpandidos"></ion-icon>
-  </ion-item>
-
-  <app-expandable expandHeight="100px" [expanded]="filtrosExpandidos" >
-    <ion-item lines=none style="border-bottom: 1px solid #dedede !important" lines=none>
-      <ion-label>Adaptado a personas con movilidad reducida</ion-label>
-      <ion-toggle [(ngModel)]="adaptado_movilidad_reducida" (ionChange)="toggle_pmr_cambiado($event)"></ion-toggle>
-    </ion-item>
-  
+  <div class="div_login">
     <ion-item>
-      <ion-label>Hora de salida</ion-label>
-      <ion-datetime [(ngModel)]="hora_filtro" displayFormat="HH:mm" minuteValues="0,5,10,15,20,25,30,35,40,45,50,55" doneText="Aceptar" cancelText="Cancelar"></ion-datetime>
+      <ion-label>Origen</ion-label>
+      <ion-select  okText="Aceptar" cancelText="Cancelar" [(ngModel)]="origen">
+        <ion-select-option *ngFor="let nucleo of nucleos" value="{{nucleo.nombre}}">{{nucleo.nombre}}</ion-select-option>  
+      </ion-select>
     </ion-item>
-  </app-expandable>
-  
-  
 
-  <ion-button (click)="buscarRutas()" color="primary" class="botonBuscarRutas">Buscar</ion-button>
+    <ion-item>
+      <ion-label>Destino</ion-label>
+      <ion-select  okText="Aceptar" cancelText="Cancelar" [(ngModel)]="destino">
+        <ion-select-option *ngFor="let nucleo of nucleos" value="{{nucleo.nombre}}">{{nucleo.nombre}}</ion-select-option>  
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Fecha</ion-label>
+      <ion-datetime
+        [(ngModel)]="fecha_seleccionada"
+        doneText="Aceptar"
+        cancelText="Cancelar" 
+        pickerFormat="DDD DD MMMM" 
+        display-format="DDDD DD de MMMM"
+        day-names="Domingo, Lunes, Martes, Miércoles, Jueves, Viernes, Sábado"
+        month-names="Enero, Febrero, Marzo, Abril, Mayo, Junio, Julio, Agosto, Septiembre, Octubre, Noviembre, Diciembre">
+      </ion-datetime>
+    </ion-item>
+    
+    <ion-item (click)="expandirObjeto()" style="border-bottom: 1px solid #dedede !important" lines=none>
+      <ion-label>Filtros</ion-label>
+      <ion-icon name="arrow-down" *ngIf="filtrosExpandidos"></ion-icon>
+      <ion-icon name="arrow-forward" *ngIf="!filtrosExpandidos"></ion-icon>
+    </ion-item>
+
+    <app-expandable expandHeight="100px" [expanded]="filtrosExpandidos" >
+      <ion-item lines=none style="border-bottom: 1px solid #dedede !important" lines=none>
+        <ion-label>Adaptado a personas con movilidad reducida</ion-label>
+        <ion-toggle [(ngModel)]="adaptado_movilidad_reducida" (ionChange)="toggle_pmr_cambiado($event)"></ion-toggle>
+      </ion-item>
+    
+      <ion-item>
+        <ion-label>Hora de salida</ion-label>
+        <ion-datetime [(ngModel)]="hora_filtro" displayFormat="HH:mm" minuteValues="0,5,10,15,20,25,30,35,40,45,50,55" doneText="Aceptar" cancelText="Cancelar"></ion-datetime>
+      </ion-item>
+    </app-expandable>
+    
+    
+
+    <ion-button (click)="buscarRutas()" color="primary" class="botonBuscarRutas">Buscar</ion-button>
+  </div>
   <ng-template [ngIf]="modo_autobus">
     <ion-card *ngFor="let horario of lista_horarios_final" (click)='irDetalleRuta(horario)'>
     <!-- <ion-card-header>

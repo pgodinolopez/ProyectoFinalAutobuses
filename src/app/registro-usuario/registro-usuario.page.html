@@ -1,29 +1,31 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>registro_usuario</ion-title>
+  <ion-toolbar class="barra_superior">
+    <ion-title>Registro</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-item>
-    <ion-label position="floating">Nombre</ion-label>
-    <ion-input [(ngModel)]="usuario._nombre"></ion-input>
-  </ion-item>
+  <div class="divRegistro">
+    <ion-item>
+      <ion-icon name="contact" class="icono_contacto"  expand="block" fill="outline" item-center ></ion-icon>
+      <ion-label position="floating">Nombre</ion-label>
+      <ion-input [(ngModel)]="usuario._nombre"></ion-input>
+    </ion-item>
 
-  <ion-item>
-    <ion-label position="floating">Email</ion-label>
-    <ion-input [(ngModel)]="usuario._email"></ion-input>
-  </ion-item>
+    <ion-item>
+      <ion-label position="floating">Email</ion-label>
+      <ion-input [(ngModel)]="usuario._email"></ion-input>
+    </ion-item>
 
-  <ion-item>
-    <ion-label position="floating">Teléfono</ion-label>
-    <ion-input [(ngModel)]="usuario._telefono"></ion-input>
-  </ion-item>
+    <ion-item>
+      <ion-label position="floating">Teléfono</ion-label>
+      <ion-input [(ngModel)]="usuario._telefono"></ion-input>
+    </ion-item>
 
-  <ion-item>
-    <ion-label position="floating">Contraseña</ion-label>
-    <ion-input type="password" [(ngModel)]="usuario._password"></ion-input>
-  </ion-item>
-
-  <ion-button color="primary" (click)='registrar_usuario()' class="botonRegistro">Registrarte</ion-button>
+    <ion-item>
+      <ion-label position="floating">Contraseña</ion-label>
+      <ion-input type="password" [(ngModel)]="usuario._password"></ion-input>
+    </ion-item>
+    <ion-button color="primary" class="botonRegistro" (click)='registrar_usuario()' class="botonRegistro">Registrarte</ion-button>
+  </div>
 </ion-content>

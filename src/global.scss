@@ -9,3 +9,14 @@
 @import '~@ionic/angular/css/text-alignment.css';
 @import '~@ionic/angular/css/text-transformation.css';
 @import '~@ionic/angular/css/flex-utils.css';
+
+.barra_superior{
+    --background: #fff2df;
+}
+
+.boton_login_toolbar {
+    max-height: 26px;
+    min-height: 26px;
+    max-width: 119.443px;
+    font-size: 12px;
+}

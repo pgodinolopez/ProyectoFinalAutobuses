@@ -3,6 +3,7 @@ import { Usuario } from '../modelos/usuario';
 import { AutenticacionService } from '../servicios/autenticacion.service';
 import { Router } from '@angular/router';
 import { Storage } from '@ionic/storage';
+import { ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-login',
@@ -12,8 +13,9 @@ import { Storage } from '@ionic/storage';
 export class LoginPage implements OnInit {
 
   usuario: Usuario = new Usuario('', '', '', '');;
+  toast: any;
 
-  constructor(private autenticacion_service: AutenticacionService, private router: Router, private storage: Storage) { 
+  constructor(private autenticacion_service: AutenticacionService, private router: Router, private storage: Storage, public toastController: ToastController) { 
     
   }
 
@@ -42,9 +44,23 @@ export class LoginPage implements OnInit {
       this.autenticacion_service.setToken(usuarioDevuelto.token);
       
       this.router.navigate(['/tabs/ver-rutas'])
+    }, error => {
+      console.log('error', error['error']);
+      if (error['error']['message']=="Bad credentials") {
+        this.mostrarToast('Email o contraseña incorrectos.')
+      } 
     });
-    
+  }
+
+  mostrarToast(mensaje: string) {
+    this.toast = this.toastController.create({
+      message: mensaje,
+      duration: 2000,
+      color: 'dark'
+    }).then((toastData)=>{
+      console.log(toastData);
+      toastData.present();
+    });
   }
   
-
 }

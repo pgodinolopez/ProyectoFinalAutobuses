@@ -1,21 +1,23 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>login</ion-title>
+  <ion-toolbar class="barra_superior">
+    <ion-title>Login</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  
-  <ion-item>
-    <ion-label position="floating">Email</ion-label>
-    <ion-input [(ngModel)]="usuario._email"></ion-input>
-  </ion-item>
+  <div class="div_login">
+    <ion-item>
+      <ion-icon name="contact" class="icono_contacto"  expand="block" fill="outline" item-center ></ion-icon>    
+      <ion-label position="floating">Email</ion-label>
+      <ion-input [(ngModel)]="usuario._email"></ion-input>
+    </ion-item>
 
-  <ion-item>
-    <ion-label position="floating">Contraseña</ion-label>
-    <ion-input type="password" [(ngModel)]="usuario._password"></ion-input>
-  </ion-item>
+    <ion-item>
+      <ion-label position="floating">Contraseña</ion-label>
+      <ion-input type="password" [(ngModel)]="usuario._password"></ion-input>
+    </ion-item>
 
-  <ion-button color="primary" (click)='autenticar_usuario()' class="botonLogin">Iniciar sesión</ion-button>
-
+    <ion-button color="primary" (click)='autenticar_usuario()' class="botonLogin">Iniciar sesión</ion-button>
+    <ion-button expand="block" fill="outline" class="boton_crear_cuenta" routerLink="/tabs/registro-usuario">Crea una cuenta</ion-button>
+  </div>
 </ion-content>

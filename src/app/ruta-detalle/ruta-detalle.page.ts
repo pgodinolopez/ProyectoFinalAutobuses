@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { RutasService } from '../servicios/rutas.service';
 import { Horario } from '../modelos/horario';
 import { GoogleMaps, GoogleMapsEvent, LatLng, GoogleMapOptions, MarkerOptions } from '@ionic-native/google-maps';
 import { Linea } from '../modelos/linea';
-import { Platform } from "@ionic/angular";
+import { Platform, ActionSheetController } from "@ionic/angular";
 import { Storage } from '@ionic/storage';
 @Component({
   selector: 'app-ruta-detalle',
@@ -17,40 +17,40 @@ export class RutaDetallePage implements OnInit {
   horario: Horario;
   linea: Linea;
   map: any;
-  token: string = '';
+  token: any = {
+    'token': '',
+    'valido': false,
+  };
   listaHorarios: Horario[];
   rutaFavorita: boolean = false;
 
-  constructor(private route: ActivatedRoute, private rutasService: RutasService, public platform: Platform, private storage: Storage) {
+  constructor(private route: ActivatedRoute, private rutasService: RutasService, public platform: Platform, private storage: Storage,
+    private actionSheetController: ActionSheetController, private router: Router) {
 
   }
 
   ngOnInit() {
     this.horario = this.rutasService.getHorarioDetalle();
 
-    console.log(this.horario)
-    console.log(this.horario.linea.polilinea);
-    
+  }
 
-    this.idlinea = this.route.snapshot.paramMap.get('idlinea');
-    this.rutasService.getDatosLineaPorId(this.idlinea).subscribe(
-      (lineaObtenida) => {
-        this.linea = lineaObtenida;
+  ionViewDidEnter() {
+    let token = this.storage.get('token').then(
+      (token) => {
+        this.token = token;
+        console.log(this.token)
+        
       }
     );
   }
 
-  ionViewDidEnter() {
-    
-  }
-
-  obtenerRutasFavoritas(token: string) {
-    this.rutasService.getRutasFavoritas(token).subscribe(
+  obtenerRutasFavoritas(token: any) {
+    this.rutasService.getRutasFavoritas(token.token).subscribe(
       (respuesta)=>{
         console.log(respuesta)
         this.listaHorarios = respuesta['data']; 
         if (this.listaHorarios.length==0) {
-          this.rutasService.postRutaFavorita(token, this.horario).subscribe(
+          this.rutasService.postRutaFavorita(token.token, this.horario).subscribe(
             () => {
               
             }
@@ -65,13 +65,13 @@ export class RutaDetallePage implements OnInit {
               horarioPulsado.horaSalida == this.listaHorarios[i]["hora_salida"] && horarioPulsado.horaLlegada == this.listaHorarios[i]["hora_llegada"]
               ) {
                 // La ruta es favorita
-                this.borrarHorarioFavorito(token, this.listaHorarios[i]["id"]);
+                this.borrarHorarioFavorito(token.token, this.listaHorarios[i]["id"]);
                 alert('Ruta borrada de favoritos')
                 break;
               } else {
                 // La ruta no es favorita
                 console.log('no favorita');
-                this.rutasService.postRutaFavorita(token, this.horario).subscribe(
+                this.rutasService.postRutaFavorita(token.token, this.horario).subscribe(
                   () => {
                     
                   }
@@ -85,7 +85,7 @@ export class RutaDetallePage implements OnInit {
       console.log('error', error['error']);
       if (error['error']['message']=="Expired JWT Token") {
         let token = {
-          'token': this.token,
+          'token': this.token.token,
           'valido': false
         }
         this.storage.set('token', token);
@@ -161,14 +161,7 @@ export class RutaDetallePage implements OnInit {
   }
 
   addFavoritos() {
-    let token = this.storage.get('token').then(
-      (token) => {
-        this.token = token.token;
-        console.log(this.token)
-        this.obtenerRutasFavoritas(this.token);
-        
-      }
-    );
+    this.obtenerRutasFavoritas(this.token);    
   }
 
   borrarHorarioFavorito(token: string, id: number) {
@@ -177,6 +170,35 @@ export class RutaDetallePage implements OnInit {
 
       }
     );
+  }
+
+  async mostrarMenuUsuario() {
+    const actionSheet = await this.actionSheetController.create({
+      header: 'Usuario',
+      buttons: [{
+        text: 'Cerrar Sesión',
+        icon: 'power',
+        handler: () => {
+          this.token = {
+            'token': '',
+            'valido': false,
+          };
+          this.storage.set('token', this.token);
+          this.router.navigate(['']);
+        }
+      }, {
+        text: 'Cancelar',
+        icon: 'close',
+        role: 'cancel',
+        handler: () => {
+        }
+      }]
+    });
+    await actionSheet.present();
+  }
+
+  irAPaginaLogin() {
+    this.router.navigate(['/tabs/login']);
   }
 
 }

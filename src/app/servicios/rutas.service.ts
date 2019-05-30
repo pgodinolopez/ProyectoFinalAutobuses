@@ -25,7 +25,8 @@ export class RutasService {
   url_horarios_lineas = '';
   url_información_lineas = this.url_base + '/lineas/';
   horario: Horario;
-  url_base_api_rest = 'http://127.0.0.1:8000/api/v1';
+  // url_base_api_rest = 'http://127.0.0.1:8000/api/v1';
+  url_base_api_rest = 'http://192.168.0.161:8000/api/v1';
   url_rutas_favoritas = this.url_base_api_rest + '/rutas_favoritas';
 
   constructor(private http: HttpClient) { 

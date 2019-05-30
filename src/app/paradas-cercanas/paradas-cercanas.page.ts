@@ -11,10 +11,12 @@ import {
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 
 
-import { Platform, NavController, LoadingController } from "@ionic/angular";
+import { Platform, NavController, LoadingController, ActionSheetController } from "@ionic/angular";
 import { ParadasService } from '../servicios/paradas.service';
 import { Parada } from '../modelos/parada';
 import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
+import { Router } from '@angular/router';
+import { Storage } from '@ionic/storage';
 // import { MapsProvider } from './../../providers/maps/maps';
 
 declare var google: any;
@@ -23,13 +25,20 @@ declare var google: any;
   templateUrl: './paradas-cercanas.page.html',
   styleUrls: ['./paradas-cercanas.page.scss'],
 })
-export class ParadasCercanasPage implements OnInit {
+export class ParadasCercanasPage {
   
   listaParadas: Parada[]; 
   localizacion = {latitud: null, longitud: null};
   contador:number = 0;
+  token: any = {
+    'token': '',
+    'valido': false,
+  };
 
-  constructor(public platform: Platform, public nav: NavController, private paradasService: ParadasService, public geolocation: Geolocation, private androidPermissions: AndroidPermissions, private loadingController: LoadingController) {
+  constructor(public platform: Platform, public nav: NavController, private paradasService: ParadasService,
+     public geolocation: Geolocation, private androidPermissions: AndroidPermissions,
+     private loadingController: LoadingController, private actionSheetController: ActionSheetController,
+     private router: Router, private storage: Storage) {
     this.listaParadas = [];
   }
 
@@ -71,8 +80,14 @@ export class ParadasCercanasPage implements OnInit {
     });
   }
 
-  ngOnInit() {
-    
+  ionViewDidEnter() {
+    let token = this.storage.get('token').then(
+      (token) => {
+        if(token!=null) {
+          this.token = token;
+      }
+    });
+
     this.platform.ready().then( () => {
       this.obtenerParadas().then(
         ()=>{
@@ -81,23 +96,6 @@ export class ParadasCercanasPage implements OnInit {
       );
 			
 		});
-    
-    // this.androidPermissions.requestPermissions([this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION, this.androidPermissions.PERMISSION.GET_ACCOUNTS]);
-
-    
-    // let options = {
-    //   enableHighAccuracy: true,
-    //   timeout: 25000
-    // };
-    
-
-    
-
-      
-  }
-
-  ngAfterViewInit() {
-    
 		
 	}
 
@@ -196,6 +194,35 @@ export class ParadasCercanasPage implements OnInit {
     let opcionesMarcador: MarkerOptions = { position: posicion, title: parada.nombre, icon: "assets/images/marker.png" };
     const marcador = mapa.addMarker( opcionesMarcador );
     
+  }
+
+  async mostrarMenuUsuario() {
+    const actionSheet = await this.actionSheetController.create({
+      header: 'Usuario',
+      buttons: [{
+        text: 'Cerrar Sesión',
+        icon: 'power',
+        handler: () => {
+          this.token = {
+            'token': '',
+            'valido': false,
+          };
+          this.storage.set('token', this.token);
+          this.router.navigate(['']);
+        }
+      }, {
+        text: 'Cancelar',
+        icon: 'close',
+        role: 'cancel',
+        handler: () => {
+        }
+      }]
+    });
+    await actionSheet.present();
+  }
+
+  irAPaginaLogin() {
+    this.router.navigate(['/tabs/login']);
   }
 
 }

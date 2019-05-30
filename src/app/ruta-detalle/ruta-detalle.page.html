@@ -1,14 +1,15 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>ruta-detalle</ion-title>
+  <ion-toolbar class="barra_superior">
+      <ion-item lines="none" class="barra_superior">
+          <ion-title>Detalle</ion-title>
+        <ion-button *ngIf="!token.valido" expand="block" fill="outline" item-right (click)='irAPaginaLogin()' class="boton_login_toolbar">Iniciar Sesión</ion-button>  
+        <ion-icon name="contact" size="large" *ngIf="token.valido" expand="block" fill="outline" item-right (click)='mostrarMenuUsuario()'></ion-icon>  
+      </ion-item>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
   <!-- <ion-scroll scrollX="true"> -->
-  
-  
-    
     <div class="divDetalle">
       <ion-card>
         <ion-card-content>
@@ -61,7 +62,6 @@
           <ion-icon name="heart"></ion-icon>
         </ion-fab-button>
     </ion-fab>
-
   <!-- </ion-scroll> -->
   
 </ion-content>
