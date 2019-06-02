@@ -6,6 +6,7 @@ import { GoogleMaps, GoogleMapsEvent, LatLng, GoogleMapOptions, MarkerOptions } 
 import { Linea } from '../modelos/linea';
 import { Platform, ActionSheetController, ToastController } from "@ionic/angular";
 import { Storage } from '@ionic/storage';
+import { NativeGeocoder, NativeGeocoderResult, NativeGeocoderOptions } from '@ionic-native/native-geocoder/ngx';
 
 @Component({
   selector: 'app-ruta-detalle',
@@ -27,7 +28,8 @@ export class RutaDetallePage implements OnInit {
   rutaFavorita: boolean = false;
 
   constructor(private route: ActivatedRoute, private rutasService: RutasService, public platform: Platform, private storage: Storage,
-    private actionSheetController: ActionSheetController, private router: Router, public toastController: ToastController) {
+    private actionSheetController: ActionSheetController, private router: Router, public toastController: ToastController,
+    private nativeGeocoder: NativeGeocoder) {
 
   }
 
@@ -120,6 +122,19 @@ export class RutaDetallePage implements OnInit {
 
     console.log(coordenadasIda)
 
+    let options: NativeGeocoderOptions = {
+      useLocale: true,
+      maxResults: 5
+    };
+
+    this.nativeGeocoder.forwardGeocode(this.horario.origen, options)
+      .then((result: NativeGeocoderResult[]) => console.log('The coordinates are latitude=' + result[0].latitude + ' and longitude=' + result[0].longitude))
+      .catch((error: any) => console.log(error));
+
+    this.nativeGeocoder.forwardGeocode(this.horario.destino, options)
+      .then((result: NativeGeocoderResult[]) => console.log('The coordinates are latitude=' + result[0].latitude + ' and longitude=' + result[0].longitude))
+      .catch((error: any) => console.log(error));
+
     let mapOptions: GoogleMapOptions = {
       camera: {
           target: {
@@ -167,6 +182,11 @@ export class RutaDetallePage implements OnInit {
       }
     );
   }
+
+
+  
+  // AIzaSyDV4JB4N-neOVZ9p0lqta66XaWkWHBBcEY
+
 
   async mostrarMenuUsuario() {
     const actionSheet = await this.actionSheetController.create({

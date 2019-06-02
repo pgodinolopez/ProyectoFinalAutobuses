@@ -14,6 +14,7 @@ import {Geolocation} from '@ionic-native/geolocation/ngx';
 import { GoogleMaps } from '@ionic-native/google-maps';
 import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
 import { IonicStorageModule } from '@ionic/storage';
+import { NativeGeocoder } from '@ionic-native/native-geocoder/ngx';
 
 
 @NgModule({
@@ -25,6 +26,7 @@ import { IonicStorageModule } from '@ionic/storage';
     SplashScreen,
     Geolocation,
     GoogleMaps,
+    NativeGeocoder,
     AndroidPermissions,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
