@@ -4,8 +4,9 @@ import { RutasService } from '../servicios/rutas.service';
 import { Horario } from '../modelos/horario';
 import { GoogleMaps, GoogleMapsEvent, LatLng, GoogleMapOptions, MarkerOptions } from '@ionic-native/google-maps';
 import { Linea } from '../modelos/linea';
-import { Platform, ActionSheetController } from "@ionic/angular";
+import { Platform, ActionSheetController, ToastController } from "@ionic/angular";
 import { Storage } from '@ionic/storage';
+
 @Component({
   selector: 'app-ruta-detalle',
   templateUrl: './ruta-detalle.page.html',
@@ -21,25 +22,23 @@ export class RutaDetallePage implements OnInit {
     'token': '',
     'valido': false,
   };
+  toast: any;
   listaHorarios: Horario[];
   rutaFavorita: boolean = false;
 
   constructor(private route: ActivatedRoute, private rutasService: RutasService, public platform: Platform, private storage: Storage,
-    private actionSheetController: ActionSheetController, private router: Router) {
+    private actionSheetController: ActionSheetController, private router: Router, public toastController: ToastController) {
 
   }
 
   ngOnInit() {
     this.horario = this.rutasService.getHorarioDetalle();
-
   }
 
   ionViewDidEnter() {
     let token = this.storage.get('token').then(
       (token) => {
         this.token = token;
-        console.log(this.token)
-        
       }
     );
   }
@@ -55,28 +54,27 @@ export class RutaDetallePage implements OnInit {
               
             }
           );
-          alert('Ruta añadida a favoritos')
+          this.mostrarToast('Ruta añadida a favoritos')
 
         } else {
           let horarioPulsado = this.rutasService.getHorarioDetalle();
           for (let i = 0; i < this.listaHorarios.length; i++) {
             if (horarioPulsado.idlinea == this.listaHorarios[i].idlinea && horarioPulsado.codigo == this.listaHorarios[i].codigo && 
               horarioPulsado.origen == this.listaHorarios[i].origen && horarioPulsado.destino == this.listaHorarios[i].destino && horarioPulsado.operadores == this.listaHorarios[i].operadores && 
-              horarioPulsado.horaSalida == this.listaHorarios[i]["hora_salida"] && horarioPulsado.horaLlegada == this.listaHorarios[i]["hora_llegada"]
+              horarioPulsado.hora_salida == this.listaHorarios[i].hora_salida && horarioPulsado.hora_llegada == this.listaHorarios[i].hora_llegada
               ) {
                 // La ruta es favorita
                 this.borrarHorarioFavorito(token.token, this.listaHorarios[i]["id"]);
-                alert('Ruta borrada de favoritos')
+                this.mostrarToast('Ruta borrada de favoritos')
                 break;
               } else {
                 // La ruta no es favorita
-                console.log('no favorita');
                 this.rutasService.postRutaFavorita(token.token, this.horario).subscribe(
                   () => {
                     
                   }
                 );
-                alert('Ruta añadida a favoritos')
+                this.mostrarToast('Ruta añadida a favoritos')
                 break;
               }
           };
@@ -101,8 +99,6 @@ export class RutaDetallePage implements OnInit {
     
     this.platform.ready().then( () => {
       let arrayCoordenadas = [];
-      
-      console.log(arrayCoordenadas)
       this.loadMap(this.horario.linea);
     });
 		
@@ -149,13 +145,13 @@ export class RutaDetallePage implements OnInit {
         'geodesic': true
       });
       
-      const posicionInicio = new LatLng(parseFloat(coordenadasIda[0].lat), parseFloat(coordinates[0].lng));
-      let opcionesMarcadorInicio: MarkerOptions = { position: posicionInicio, title: 'Salida', icon: "assets/images/marker.png" };
-      const marcadorInicio = map.addMarker( opcionesMarcadorInicio );
+      const posicionFin = new LatLng(parseFloat(coordenadasIda[0].lat), parseFloat(coordinates[0].lng));
+      let opcionesMarcadorInicio: MarkerOptions = { position: posicionFin, title: 'Llegada', icon: "assets/images/marker.png" };
+      const marcadorFin = map.addMarker( opcionesMarcadorInicio );
 
-      const posicionFin = new LatLng(parseFloat(coordenadasIda[Math.round(coordenadasIda.length-1)].lat), parseFloat(coordenadasIda[Math.round(coordenadasIda.length-1)].lng));
-      let opcionesMarcadorFin: MarkerOptions = { position: posicionFin, title: 'Llegada', icon: "assets/images/marker.png" };
-      const marcadorFin = map.addMarker( opcionesMarcadorFin );
+      const posicionInicio = new LatLng(parseFloat(coordenadasIda[Math.round(coordenadasIda.length-1)].lat), parseFloat(coordenadasIda[Math.round(coordenadasIda.length-1)].lng));
+      let opcionesMarcadorFin: MarkerOptions = { position: posicionInicio, title: 'Salida', icon: "assets/images/marker.png" };
+      const marcadorInicio = map.addMarker( opcionesMarcadorFin );
       
     })
   }
@@ -200,5 +196,14 @@ export class RutaDetallePage implements OnInit {
   irAPaginaLogin() {
     this.router.navigate(['/tabs/login']);
   }
-
+  
+  mostrarToast(mensaje: string) {
+    this.toast = this.toastController.create({
+      message: mensaje,
+      duration: 2000,
+      color: 'dark'
+    }).then((toastData)=>{
+      toastData.present();
+    });
+  }
 }

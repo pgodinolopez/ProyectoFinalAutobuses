@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar class="barra_superior">
       <ion-item lines="none" class="barra_superior">
-          <ion-title>Detalle</ion-title>
+          <ion-title>Detalles</ion-title>
         <ion-button *ngIf="!token.valido" expand="block" fill="outline" item-right (click)='irAPaginaLogin()' class="boton_login_toolbar">Iniciar Sesión</ion-button>  
         <ion-icon name="contact" size="large" *ngIf="token.valido" expand="block" fill="outline" item-right (click)='mostrarMenuUsuario()'></ion-icon>  
       </ion-item>
@@ -11,43 +11,37 @@
 <ion-content>
   <!-- <ion-scroll scrollX="true"> -->
     <div class="divDetalle">
-      <ion-card>
-        <ion-card-content>
-          <ion-card-title>
-            {{horario.codigo}}
-          </ion-card-title>
-          <ion-list>
-            <ion-item>
-              
-              <p>Hora de salida: {{horario.horaSalida}}</p>
-            </ion-item>
-            
-            <ion-item>
-                
-                <p>Hora de llegada: {{horario.horaLlegada}}</p>
-            </ion-item>
-            
-            <ion-item>
-                
-                <p>Operador: {{horario.operadores}}</p>
-            </ion-item>
-  
-            <ion-item>
-                
-                <p>Precio billete sencillo: {{horario.precio_billete_sencillo}}</p>
-            </ion-item>
-            
-            <ion-item>
-                
-              <p>Precio billete sencillo: {{horario.linea.pmr}}</p>
-          </ion-item>
-  
-          </ion-list>
-          
-          
-  
-        </ion-card-content>
-      </ion-card>
+      <ion-item lines="full">
+        <b><ion-label>{{horario.operadores}}</ion-label></b>    
+      </ion-item>
+      <ion-item lines="full">
+        <ion-label>{{horario.origen}}<br>{{horario.destino}}</ion-label>
+        <ion-label>
+          {{horario.hora_salida}}
+          <br>
+          {{horario.hora_llegada}}
+          <br>
+        </ion-label>
+      </ion-item>
+      <ion-item lines="full">
+        <ion-label>
+          <!-- {{}} -->
+          <div class="titulo_precios"><b>Precios</b></div>
+          <br>
+          Billete sencillo 
+          <br>
+          Tarjeta del consorcio 
+        </ion-label>    
+        <ion-label style="margin-top: 34px">
+            <br>
+            {{horario.precio_billete_sencillo | number : '1.2-2'}} €
+            <br>
+            {{horario.precio_tarjeta | number : '1.2-2'}} €
+        </ion-label>
+      </ion-item>
+      <ion-item lines="full">
+        <ion-label><b>Duración del viaje: {{horario.tiempo_estimado}}</b></ion-label>    
+      </ion-item>
     </div>
 
     <div class="mapDiv">

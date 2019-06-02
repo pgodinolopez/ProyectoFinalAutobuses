@@ -28,8 +28,6 @@ export class RutasFavoritasPage {
     let token = this.storage.get('token').then(
       (token) => {
         this.token = token;
-        console.log(this.token)
-        console.log(this.token.token)
         if (token.token!=null) {
           this.obtenerRutasFavoritas(token.token);
         } else {
@@ -42,10 +40,8 @@ export class RutasFavoritasPage {
   obtenerRutasFavoritas(token: string) {
     this.rutasService.getRutasFavoritas(token).subscribe(
       (respuesta)=>{
-        console.log(respuesta)
         this.listaHorarios = respuesta['data'];     
       }, error => {
-      console.log('error', error['error']);
       if (error['error']['message']=="Expired JWT Token") {
         let token = {
           'token': this.token.token,
@@ -64,7 +60,6 @@ export class RutasFavoritasPage {
       duration: 2000,
       color: 'dark'
     }).then((toastData)=>{
-      console.log(toastData);
       toastData.present();
     });
   }

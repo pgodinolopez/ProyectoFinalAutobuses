@@ -7,10 +7,12 @@ export class Horario {
     dias: string;
     observaciones: string;
     demandahoras: string;
-    horaSalida: string;
-    horaLlegada: string;
+    hora_salida: string;
+    hora_llegada: string;
     operadores: string;
     precio_billete_sencillo: number;
+    precio_tarjeta: number;
+    tiempo_estimado: string;
     pmr: boolean;
     linea: Linea;
     origen: string;

@@ -40,9 +40,8 @@ export class VerRutasPage implements OnInit {
   adaptado_movilidad_reducida: boolean;
   lineaObtenida: Linea;
   precio_billete_sencillo: number;
+  precio_tarjeta: number;
   hora_filtro: any;
-  // municipioOrigen: Municipio;
-  // municipioDestino: Municipio;
   
   filtrosExpandidos: boolean = false;
 
@@ -67,17 +66,14 @@ export class VerRutasPage implements OnInit {
 
   toggle_pmr_cambiado($event) {
     
-    console.log(this.adaptado_movilidad_reducida)
   }
 
   obtenerHorarios() {
     let fecha = new Date(this.fecha_seleccionada);
-    console.log(this.hora_filtro);
     let dia_semana = format(fecha, "iiii"); 
     this.rutasService.getHorarios(this.nucleoDestino.idNucleo, this.nucleoOrigen.idNucleo).subscribe(
       (horarios)=>{
         
-        console.log(horarios['horario']);
         this.horarios = horarios['horario'];
         this.horarios.forEach(horario => {
           if (horario.dias=="L-V" && (dia_semana == "Monday" || dia_semana == "Tuesday" || dia_semana == "Wednesday" || dia_semana == "Thursday" || dia_semana == "Friday")) {
@@ -106,6 +102,11 @@ export class VerRutasPage implements OnInit {
             this.obtenerInformacionLineas(parseInt(horario.idlinea), horario);
           }     
         });
+      }, error => {
+        console.log('error', error['error']);
+        if (error['error']['error']=="No se encuentran los datos") {
+          this.mostrarToast('No se han encontrado resultados.')
+        } 
       });
       
   }
@@ -118,7 +119,7 @@ export class VerRutasPage implements OnInit {
     if (this.origen != '' && this.destino != '' && this.fecha_seleccionada != undefined) {
       this.obtenerPrecioEntreOrigenYDestino(this.nucleoDestino.idNucleo, this.nucleoOrigen.idNucleo);
     } else {  
-      this.mostrarToast();
+      this.mostrarToast('Debes seleccionar un origen, un destino y una fecha');
     }
     
   }
@@ -138,48 +139,17 @@ export class VerRutasPage implements OnInit {
         
         if (horario.linea.modo == 'Autobús') {
           this.modo_autobus = true;
-        }
-        
-        // console.log(horario.operadores)
-        // console.log(horario.linea.modo);
-        // console.log(lineaObtenida);
-        
+        }       
       }
       
     );
     
-    
-    
-    
   }
-
-  // obtenerMunicipios() {
-  //   this.rutasService.getMunicipios().subscribe(
-  //     (municipios) => {
-  //       this.municipios = municipios['municipios'];
-  //       // this.municipios.forEach(municipio => {
-  //       //   municipio.idMunicipio = 
-  //       // });
-  //       console.log(this.municipios);
-        
-  //     }
-  //   );
-  // }
 
   obtenerNucleos() {
     this.rutasService.getNucleos().subscribe(
       (nucleos) => {
         this.nucleos = nucleos['nucleos'];
-        console.log(this.nucleos);
-      }
-    );
-  }
-
-  obtenerBloquesLinea(idlinea: number) {
-    this.rutasService.obtenerBloquesDePasoPorIdLinea(idlinea).subscribe(
-      (bloques) => {
-        this.bloques = bloques['bloques'];
-        console.log(this.bloques);
       }
     );
   }
@@ -194,12 +164,12 @@ export class VerRutasPage implements OnInit {
             tarifas['tarifasInterurbanas'].forEach(tarifa => {
               if (tarifa['saltos'] == numero_saltos) {
                 this.precio_billete_sencillo = tarifa['bs'];
+                this.precio_tarjeta = tarifa['tarjeta'];
               }
             });
           }
         );
         this.obtenerHorarios();
-        console.log(calculo_saltos['saltos']);
       }
     );
   }
@@ -218,16 +188,28 @@ export class VerRutasPage implements OnInit {
     // this.obtenerBloquesLinea(parseInt(horario.idlinea));
     // this.orden = this.bloques.find(i => i.idLinea === parseInt(horario.idlinea)).orden;
     
-    horario.horaSalida = horario.horas[0];
-    if (horario.horaSalida === '--') {
-      horario.horaSalida = horario.horas[1];
+    horario.hora_salida = horario.horas[0];
+    if (horario.hora_salida === '--') {
+      horario.hora_salida = horario.horas[1];
     }
     
-    horario.horaLlegada = horario.horas[horario.horas.length-1];
-    if (horario.horaLlegada === '--') {
-      horario.horaLlegada = horario.horas[horario.horas.length-2];
+    horario.hora_llegada = horario.horas[horario.horas.length-1];
+    if (horario.hora_llegada === '--') {
+      horario.hora_llegada = horario.horas[horario.horas.length-2];
     }
 
+    let horaComienzo = new Date("Mon Jan 01 2007 " + horario.hora_salida + ':00 GMT+0530').getTime();
+    let horaFin = new Date("Mon Jan 01 2007 " + horario.hora_llegada + ':00 GMT+0530').getTime();
+    let diferenciaMs = horaFin - horaComienzo; 
+    let diferenciaMinutos = diferenciaMs / 60 / 1000; 
+    let diferenciaHoras = diferenciaMs / 3600 / 1000; 
+    
+    let tiempoEstimadoObj = {};
+    tiempoEstimadoObj["horas"] = Math.floor(diferenciaHoras);
+    tiempoEstimadoObj["minutos"] = diferenciaMinutos - 60 * tiempoEstimadoObj["horas"];
+    console.log(tiempoEstimadoObj);
+    let stringTiempoEstimado = tiempoEstimadoObj["horas"] + ' h ' + tiempoEstimadoObj["minutos"] + ' min';
+    horario.tiempo_estimado = stringTiempoEstimado;
     horario.origen = this.origen;
     horario.destino = this.destino;
     
@@ -236,15 +218,13 @@ export class VerRutasPage implements OnInit {
       let horaAFiltrar = format(hora, "H");
       let minutosAFiltrar = format(hora, "m");
       let horaYMinutosAFiltrar = horaAFiltrar + '.' + minutosAFiltrar;
-      let horaSalidaYMinutos = horario.horaSalida.replace(':', '.');
+      let horaSalidaYMinutos = horario.hora_salida.replace(':', '.');
       
       if (parseFloat(horaSalidaYMinutos) >= parseFloat(horaYMinutosAFiltrar)) {
-        console.log(horaAFiltrar)
-      console.log(minutosAFiltrar)
       
       horario.precio_billete_sencillo = this.precio_billete_sencillo;
+      horario.precio_tarjeta = this.precio_tarjeta;
       // this.obtenerPrecio(this.nucleoDestino.idNucleo, this.nucleoOrigen.idNucleo, horario);
-      console.log(horario)
       if (this.adaptado_movilidad_reducida == true && horario.pmr) {
         this.lista_horarios_final.push(horario);
       } else if (!this.adaptado_movilidad_reducida) {
@@ -252,12 +232,10 @@ export class VerRutasPage implements OnInit {
       }    
 
       this.lista_horarios_final.sort((a, b)=>{
-        let horaSalidaYMinutosA = a.horaSalida.replace(':', '.');
-        let horaSalidaYMinutosB = b.horaSalida.replace(':', '.');
-        let horaLlegadaYMinutosA = a.horaLlegada.replace(':', '.');
-        let horaLlegadaYMinutosB = b.horaLlegada.replace(':', '.');
-        console.log(horaSalidaYMinutosA)
-        console.log(horaSalidaYMinutosB)
+        let horaSalidaYMinutosA = a.hora_salida.replace(':', '.');
+        let horaSalidaYMinutosB = b.hora_salida.replace(':', '.');
+        let horaLlegadaYMinutosA = a.hora_salida.replace(':', '.');
+        let horaLlegadaYMinutosB = b.hora_salida.replace(':', '.');
         if(parseFloat(horaSalidaYMinutosA)>parseFloat(horaSalidaYMinutosB)) {
           return 1;
         }
@@ -276,7 +254,6 @@ export class VerRutasPage implements OnInit {
         return 0;
         });
      
-        console.log(this.lista_horarios_final);
       }
 
       
@@ -284,8 +261,8 @@ export class VerRutasPage implements OnInit {
     } else {
 
       horario.precio_billete_sencillo = this.precio_billete_sencillo;
+      horario.precio_tarjeta = this.precio_tarjeta;
       // this.obtenerPrecio(this.nucleoDestino.idNucleo, this.nucleoOrigen.idNucleo, horario);
-      console.log(horario)
       if (this.adaptado_movilidad_reducida == true && horario.pmr) {
         this.lista_horarios_final.push(horario);
       } else if (!this.adaptado_movilidad_reducida) {
@@ -293,12 +270,10 @@ export class VerRutasPage implements OnInit {
       }    
 
       this.lista_horarios_final.sort((a, b)=>{
-        let horaSalidaYMinutosA = a.horaSalida.replace(':', '.');
-        let horaSalidaYMinutosB = b.horaSalida.replace(':', '.');
-        let horaLlegadaYMinutosA = a.horaLlegada.replace(':', '.');
-        let horaLlegadaYMinutosB = b.horaLlegada.replace(':', '.');
-        console.log(horaSalidaYMinutosA)
-        console.log(horaSalidaYMinutosB)
+        let horaSalidaYMinutosA = a.hora_salida.replace(':', '.');
+        let horaSalidaYMinutosB = b.hora_salida.replace(':', '.');
+        let horaLlegadaYMinutosA = a.hora_salida.replace(':', '.');
+        let horaLlegadaYMinutosB = b.hora_salida.replace(':', '.');
         if(parseFloat(horaSalidaYMinutosA)>parseFloat(horaSalidaYMinutosB)) {
           return 1;
         }
@@ -317,7 +292,6 @@ export class VerRutasPage implements OnInit {
         return 0;
       });
      
-    console.log(this.lista_horarios_final);
     // horario.operadores = this.operadores;  
     }
   }
@@ -333,13 +307,12 @@ export class VerRutasPage implements OnInit {
     this.router.navigate(['/tabs/login']);
   }
 
-  mostrarToast() {
+  mostrarToast(mensaje: string) {
     this.toast = this.toastController.create({
-      message: 'Debes seleccionar un origen, un destino y una fecha',
+      message: mensaje,
       duration: 2000,
       color: 'dark'
     }).then((toastData)=>{
-      console.log(toastData);
       toastData.present();
     });
   }

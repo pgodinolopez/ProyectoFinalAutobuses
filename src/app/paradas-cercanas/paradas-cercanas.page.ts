@@ -43,22 +43,10 @@ export class ParadasCercanasPage {
   }
 
   async obtenerParadas() {
-    
-    // const loading = await this.loadingController.create({});
-   
-    // loading.present().then(() => {
-    //    // do your stuffs backend call etc here
-    //    this.yourStuffs().then(() => {
-    //         // Whatever you have still things to do you could do here
-    //         // finally close loading 
-    //         loading.dismiss();
-    //    });
-    // });
 
     await this.paradasService.getParadas().then(
       (paradas:Parada[]) => {
         let paradasObtenidas = paradas['paradas'];
-        // this.listaParadas = paradas['paradas'];
         this.obtenerDatosParada(paradasObtenidas).then(()=>{
           this.obtenerPosicionActual(this.listaParadas);        
           console.log(this.listaParadas);
@@ -149,40 +137,16 @@ export class ParadasCercanasPage {
     };
 
     let map = GoogleMaps.create( 'map');
-    // let map = GoogleMaps.create( 'map', position );
-    
 
     map.one( GoogleMapsEvent.MAP_READY ).then( ( data: any ) => {
   
-      
-      
-      
-  
       map.animateCamera( position );
       
-      
-
-      // this.listaParadas.forEach(parada => {
-      //   this.contador++;  
-      //   let coordenadasParada: LatLng = new LatLng(parada.latitud, parada.longitud);
-
-      //   let markerOptions: MarkerOptions = {
-      //     position: coordenadasParada,
-      //     icon: "assets/images/marker.png",
-      //     title: parada.nombre
-      //   };
-    
-      //   const marker = map.addMarker( markerOptions );
-      //   console.log(this.contador);
-      //   console.log(this.listaParadas.length);
-        
-      // });
       this.obtenerMarcadores(map, listaParadas);
     })
   }
 
   obtenerMarcadores(mapa, listaParadas) {
-    // tslint:disable-next-line:variable-name
     for (let i = 0; i < listaParadas.length; i++) {
       this.addMarcadores(listaParadas[i], mapa);
       console.log(listaParadas.length)
