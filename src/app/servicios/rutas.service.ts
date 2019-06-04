@@ -6,6 +6,8 @@ import { Municipio } from '../modelos/municipio';
 import { Nucleo } from '../modelos/nucleo';
 import { Bloque } from '../modelos/bloque';
 import { retry } from 'rxjs/operators';
+import { HTTP } from '@ionic-native/http/ngx';
+import { Observable } from 'rxjs';
 
 
 @Injectable({
@@ -28,8 +30,9 @@ export class RutasService {
   // url_base_api_rest = 'http://127.0.0.1:8000/api/v1';
   url_base_api_rest = 'http://192.168.0.161:8000/api/v1';
   url_rutas_favoritas = this.url_base_api_rest + '/rutas_favoritas';
+  url_api_directions = 'https://maps.googleapis.com/maps/api/directions/json?';
 
-  constructor(private http: HttpClient) { 
+  constructor(private http: HttpClient, private http_advanced: HTTP) { 
     
   }
 
@@ -92,6 +95,14 @@ export class RutasService {
 
   deleteRutaFavorita(token: string, id: number) {
     return this.http.delete(this.url_rutas_favoritas + '/' + id, {headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token}});
+  }
+
+  getPolylineDirectionsApi(latitudOrigen: number, longitudOrigen: number, latitudDestino: number, longitudDestino: number) {
+    return this.http_advanced.get(this.url_api_directions + 'origin=' + latitudOrigen + ',' + longitudOrigen + '&destination=' + latitudDestino + ',' + longitudDestino + '&key=AIzaSyBfG3ZD45duCVpztkuld3Aoy8UZ5XOao80', {}, {});
+  }
+
+  getGeoCodefromGoogleAPI(address: string): Observable<any> {
+    return this.http.get('https://maps.googleapis.com/maps/api/geocode/json?address=' + address + '&key=AIzaSyDV4JB4N-neOVZ9p0lqta66XaWkWHBBcEY')
   }
 
 }

@@ -7,6 +7,9 @@ import { Linea } from '../modelos/linea';
 import { Platform, ActionSheetController, ToastController } from "@ionic/angular";
 import { Storage } from '@ionic/storage';
 import { NativeGeocoder, NativeGeocoderResult, NativeGeocoderOptions } from '@ionic-native/native-geocoder/ngx';
+import { Nucleo } from '../modelos/nucleo';
+import { ParadasService } from '../servicios/paradas.service';
+import { Parada } from '../modelos/parada';
 
 @Component({
   selector: 'app-ruta-detalle',
@@ -23,26 +26,34 @@ export class RutaDetallePage implements OnInit {
     'token': '',
     'valido': false,
   };
+  nucleos: Nucleo[];
+  nucleoOrigen: Nucleo;
+  nucleoDestino: Nucleo;
   toast: any;
   listaHorarios: Horario[];
   rutaFavorita: boolean = false;
+  coordenadasOrigen: any;
 
   constructor(private route: ActivatedRoute, private rutasService: RutasService, public platform: Platform, private storage: Storage,
     private actionSheetController: ActionSheetController, private router: Router, public toastController: ToastController,
-    private nativeGeocoder: NativeGeocoder) {
+    private nativeGeocoder: NativeGeocoder, private paradasService: ParadasService) {
 
   }
 
   ngOnInit() {
-    this.horario = this.rutasService.getHorarioDetalle();
+    
+    // this.obtenerNucleos();
   }
 
   ionViewDidEnter() {
+    this.horario = this.rutasService.getHorarioDetalle();
+
     let token = this.storage.get('token').then(
       (token) => {
         this.token = token;
       }
     );
+    
   }
 
   obtenerRutasFavoritas(token: any) {
@@ -92,18 +103,15 @@ export class RutaDetallePage implements OnInit {
       } 
     });
   }
-
+  
   ngOnDestroy() {
     this.map.clear();
   }
  
   ngAfterViewInit() {
-    
     this.platform.ready().then( () => {
-      let arrayCoordenadas = [];
       this.loadMap(this.horario.linea);
     });
-		
 	}
 
   loadMap(linea: Linea) {
@@ -126,20 +134,38 @@ export class RutaDetallePage implements OnInit {
       useLocale: true,
       maxResults: 5
     };
+    let posicionOrigen;
+    let posicionDestino;
 
-    this.nativeGeocoder.forwardGeocode(this.horario.origen, options)
-      .then((result: NativeGeocoderResult[]) => console.log('The coordinates are latitude=' + result[0].latitude + ' and longitude=' + result[0].longitude))
-      .catch((error: any) => console.log(error));
+    this.rutasService.getGeoCodefromGoogleAPI(this.horario.origen).subscribe(addressData => {
 
-    this.nativeGeocoder.forwardGeocode(this.horario.destino, options)
-      .then((result: NativeGeocoderResult[]) => console.log('The coordinates are latitude=' + result[0].latitude + ' and longitude=' + result[0].longitude))
-      .catch((error: any) => console.log(error));
+      let latitud: string = addressData.results[0].geometry.location.lat;
+      let longitud: string = addressData.results[0].geometry.location.lng;
+      posicionOrigen = new LatLng(parseFloat(latitud), parseFloat(longitud));
+    });
+
+    this.rutasService.getGeoCodefromGoogleAPI(this.horario.destino).subscribe(addressData => {
+
+      let latitud: string = addressData.results[0].geometry.location.lat;
+      let longitud: string = addressData.results[0].geometry.location.lng;
+      posicionDestino = new LatLng(parseFloat(latitud), parseFloat(longitud));
+    });
+
+    // this.nativeGeocoder.forwardGeocode(this.horario.origen, options)
+    //   .then((result: NativeGeocoderResult[]) => posicionOrigen = new LatLng(parseFloat(result[0].latitude), parseFloat(result[0].longitude)))
+    //   .catch((error: any) => console.log(error));
+
+    // this.nativeGeocoder.forwardGeocode(this.horario.destino, options)
+    //   .then((result: NativeGeocoderResult[]) => posicionDestino = new LatLng(parseFloat(result[0].latitude), parseFloat(result[0].longitude)))
+    //   .catch((error: any) => console.log(error));
 
     let mapOptions: GoogleMapOptions = {
       camera: {
           target: {
             lat: parseFloat(coordenadasIda[Math.round(coordenadasIda.length/2)].lat),
             lng: parseFloat(coordenadasIda[Math.round(coordenadasIda.length/2)].lng)
+            // lat: posicionOrigen.lat,
+            // lng: posicionOrigen.lng
           },
           zoom: 9
       }
@@ -151,22 +177,43 @@ export class RutaDetallePage implements OnInit {
     
 
     map.one( GoogleMapsEvent.MAP_READY ).then( ( data: any ) => {
-      
-      
-      map.addPolyline({
-        points: coordenadasIda,
-        'color' : '#AA00FF',
-        'width': 10,
-        'geodesic': true
-      });
-      
-      const posicionFin = new LatLng(parseFloat(coordenadasIda[0].lat), parseFloat(coordinates[0].lng));
-      let opcionesMarcadorInicio: MarkerOptions = { position: posicionFin, title: 'Llegada', icon: "assets/images/marker.png" };
-      const marcadorFin = map.addMarker( opcionesMarcadorInicio );
+       this.rutasService.getPolylineDirectionsApi(posicionOrigen.lat, posicionOrigen.lng, posicionDestino.lat, posicionDestino.lng).then(
+        (response) => {
+          let response_data = JSON.parse(response.data);
 
-      const posicionInicio = new LatLng(parseFloat(coordenadasIda[Math.round(coordenadasIda.length-1)].lat), parseFloat(coordenadasIda[Math.round(coordenadasIda.length-1)].lng));
-      let opcionesMarcadorFin: MarkerOptions = { position: posicionInicio, title: 'Salida', icon: "assets/images/marker.png" };
-      const marcadorInicio = map.addMarker( opcionesMarcadorFin );
+          let decodedPoints = GoogleMaps.getPlugin().geometry.encoding.decodePath(response_data["routes"][0].overview_polyline.points);
+          map.addPolyline({
+            points : decodedPoints,
+            color : '#AA00FF',
+            width: 10,
+            geodesic : true
+            })
+            const posicionFin = posicionDestino;
+            let opcionesMarcadorInicio: MarkerOptions = { position: posicionFin, title: 'Llegada', icon: "assets/images/marker.png" };
+            const marcadorFin = map.addMarker( opcionesMarcadorInicio );
+
+            const posicionInicio = posicionOrigen;
+            let opcionesMarcadorFin: MarkerOptions = { position: posicionInicio, title: 'Salida', icon: "assets/images/marker.png" };
+            const marcadorInicio = map.addMarker( opcionesMarcadorFin );
+        }
+      );
+      
+      // map.addPolyline({
+      //   points: coordenadasIda,
+      //   'color' : '#AA00FF',
+      //   'width': 10,
+      //   'geodesic': true
+      // });
+      
+      // const posicionFin = new LatLng(parseFloat(coordenadasIda[0].lat), parseFloat(coordinates[0].lng));
+      // let opcionesMarcadorInicio: MarkerOptions = { position: posicionFin, title: 'Llegada', icon: "assets/images/marker.png" };
+      // const marcadorFin = map.addMarker( opcionesMarcadorInicio );
+
+      // const posicionInicio = new LatLng(parseFloat(coordenadasIda[Math.round(coordenadasIda.length-1)].lat), parseFloat(coordenadasIda[Math.round(coordenadasIda.length-1)].lng));
+      // let opcionesMarcadorFin: MarkerOptions = { position: posicionInicio, title: 'Salida', icon: "assets/images/marker.png" };
+      // const marcadorInicio = map.addMarker( opcionesMarcadorFin );
+
+      
       
     })
   }
@@ -182,11 +229,6 @@ export class RutaDetallePage implements OnInit {
       }
     );
   }
-
-
-  
-  // AIzaSyDV4JB4N-neOVZ9p0lqta66XaWkWHBBcEY
-
 
   async mostrarMenuUsuario() {
     const actionSheet = await this.actionSheetController.create({
@@ -226,4 +268,21 @@ export class RutaDetallePage implements OnInit {
       toastData.present();
     });
   }
+
+  // obtenerNucleos() {
+  //   this.rutasService.getNucleos().subscribe(
+  //     (nucleos) => {
+  //       this.nucleos = nucleos['nucleos'];
+  //     }
+  //   );
+  //   this.nucleoOrigen = this.nucleos.find(i => i.nombre === this.horario.origen);
+  //   this.nucleoDestino = this.nucleos.find(i => i.nombre === this.horario.destino);
+  //   this.paradasService.getDatosParada(this.nucleoOrigen.idNucleo).then(
+  //     (datosParada: Parada)=>{
+  //       this.coordenadasOrigen = new LatLng(datosParada.latitud, datosParada.longitud);
+        
+  //     }
+  //   )
+
+  // }
 }
