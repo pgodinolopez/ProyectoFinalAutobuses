@@ -61,7 +61,6 @@ export class RutaDetallePage implements OnInit {
       (respuesta)=>{
         // let respuestaJSON = JSON.parse(respuesta["data"]);
         let respuestaJSON = JSON.parse(respuesta["data"]);        
-        console.log(respuesta)
         this.listaHorarios = respuestaJSON["data"]; 
         if (this.listaHorarios.length==0) {
           this.rutasService.postRutaFavorita(token.token, this.horario).then(
@@ -96,7 +95,6 @@ export class RutaDetallePage implements OnInit {
         }
       }, error => {
         let errorJSON = JSON.parse(error["error"])        
-        console.log('error', error);
         if (errorJSON['message']=="Expired JWT Token") {
           let token = {
             'token': this.token.token,
@@ -131,7 +129,6 @@ export class RutaDetallePage implements OnInit {
       coordenadasIda.push(coordinates[i]);
     }
 
-    console.log(coordenadasIda)
 
     let options: NativeGeocoderOptions = {
       useLocale: true,
@@ -230,7 +227,6 @@ export class RutaDetallePage implements OnInit {
       () => {
 
       }, error => {
-        console.log(error)
       }
     );
   }

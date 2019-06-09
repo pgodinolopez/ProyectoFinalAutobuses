@@ -103,7 +103,6 @@ export class VerRutasPage implements OnInit {
           }     
         });
       }, error => {
-        console.log('error', error['error']);
         if (error['error']['error']=="No se encuentran los datos") {
           this.mostrarToast('No se han encontrado resultados.')
         } 
@@ -207,7 +206,6 @@ export class VerRutasPage implements OnInit {
     let tiempoEstimadoObj = {};
     tiempoEstimadoObj["horas"] = Math.floor(diferenciaHoras);
     tiempoEstimadoObj["minutos"] = diferenciaMinutos - 60 * tiempoEstimadoObj["horas"];
-    console.log(tiempoEstimadoObj);
     let stringTiempoEstimado = tiempoEstimadoObj["horas"] + ' h ' + tiempoEstimadoObj["minutos"] + ' min';
     horario.tiempo_estimado = stringTiempoEstimado;
     horario.origen = this.origen;
