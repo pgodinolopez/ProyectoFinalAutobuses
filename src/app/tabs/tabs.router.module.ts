@@ -35,7 +35,11 @@ const routes: Routes = [
           {
             path: '',
             loadChildren: '../rutas-favoritas/rutas-favoritas.module#RutasFavoritasPageModule'
-          }
+          },
+          {
+            path: 'ruta-detalle/:idlinea',
+            loadChildren: '../ruta-detalle/ruta-detalle.module#RutaDetallePageModule'
+          },
         ]
       },
       {

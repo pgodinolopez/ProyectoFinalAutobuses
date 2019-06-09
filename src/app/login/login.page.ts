@@ -32,21 +32,21 @@ export class LoginPage implements OnInit {
   }
 
   autenticar_usuario() {
-    this.autenticacion_service.autenticarUsuario(this.usuario).subscribe(usuarioDevuelto => {
-      // console.log(usuarioDevuelto);
-     
+    console.log(this.usuario)
+    this.autenticacion_service.autenticarUsuario(this.usuario).then(usuarioDevuelto => {     
+      let respuesta = JSON.parse(usuarioDevuelto["data"]);
       let token = {
-        'token': usuarioDevuelto.token,
+        'token': respuesta["token"],
         'valido': true
       }
+      console.log(respuesta["token"])
       this.storage.set('token', token);
-      // console.log(usuarioDevuelto.token)
-      this.autenticacion_service.setToken(usuarioDevuelto.token);
+      this.autenticacion_service.setToken(respuesta["token"]);
       
       this.router.navigate(['/tabs/ver-rutas'])
     }, error => {
-      console.log('error', error['error']);
-      if (error['error']['message']=="Bad credentials") {
+      let errorJSON = JSON.parse(error["error"])
+      if (errorJSON['message']=="Bad credentials") {
         this.mostrarToast('Email o contraseña incorrectos.')
       } 
     });

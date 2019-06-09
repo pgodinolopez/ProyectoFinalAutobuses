@@ -38,14 +38,16 @@ export class RutasFavoritasPage {
   }
 
   obtenerRutasFavoritas(token: string) {
-    this.rutasService.getRutasFavoritas(token).subscribe(
+    this.rutasService.getRutasFavoritas(token).then(
       (respuesta)=>{
-        this.listaHorarios = respuesta['data'];     
+        let respuestaJSON = JSON.parse(respuesta["data"]);        
+        this.listaHorarios = respuestaJSON["data"];     
       }, error => {
-      if (error['error']['message']=="Expired JWT Token") {
-        let token = {
-          'token': this.token.token,
-          'valido': false
+        let errorJSON = JSON.parse(error["error"])
+        if (errorJSON['message']=="Expired JWT Token") {
+          let token = {
+            'token': this.token.token,
+            'valido': false
         }
         this.storage.set('token', token);
         this.router.navigate(['/tabs/login']);
@@ -92,7 +94,7 @@ export class RutasFavoritasPage {
   irDetalleRuta(horario) {
     horario['favorito'] = true;
     this.rutasService.setHorarioDetalle(horario);
-    this.router.navigate(['/tabs/ver-rutas/ruta-detalle/' + horario.idlinea]);
+    this.router.navigate(['/tabs/rutas-favoritas/ruta-detalle/' + horario.idlinea]);
   }
 
   irAPaginaLogin() {

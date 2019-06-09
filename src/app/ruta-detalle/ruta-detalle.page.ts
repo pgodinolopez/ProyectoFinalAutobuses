@@ -57,12 +57,14 @@ export class RutaDetallePage implements OnInit {
   }
 
   obtenerRutasFavoritas(token: any) {
-    this.rutasService.getRutasFavoritas(token.token).subscribe(
+    this.rutasService.getRutasFavoritas(token.token).then(
       (respuesta)=>{
+        // let respuestaJSON = JSON.parse(respuesta["data"]);
+        let respuestaJSON = JSON.parse(respuesta["data"]);        
         console.log(respuesta)
-        this.listaHorarios = respuesta['data']; 
+        this.listaHorarios = respuestaJSON["data"]; 
         if (this.listaHorarios.length==0) {
-          this.rutasService.postRutaFavorita(token.token, this.horario).subscribe(
+          this.rutasService.postRutaFavorita(token.token, this.horario).then(
             () => {
               
             }
@@ -82,7 +84,7 @@ export class RutaDetallePage implements OnInit {
                 break;
               } else {
                 // La ruta no es favorita
-                this.rutasService.postRutaFavorita(token.token, this.horario).subscribe(
+                this.rutasService.postRutaFavorita(token.token, this.horario).then(
                   () => {
                     
                   }
@@ -93,14 +95,15 @@ export class RutaDetallePage implements OnInit {
           };
         }
       }, error => {
-      console.log('error', error['error']);
-      if (error['error']['message']=="Expired JWT Token") {
-        let token = {
-          'token': this.token.token,
-          'valido': false
-        }
-        this.storage.set('token', token);
-      } 
+        let errorJSON = JSON.parse(error["error"])        
+        console.log('error', error);
+        if (errorJSON['message']=="Expired JWT Token") {
+          let token = {
+            'token': this.token.token,
+            'valido': false
+          }
+          this.storage.set('token', token);
+        } 
     });
   }
   
@@ -223,9 +226,11 @@ export class RutaDetallePage implements OnInit {
   }
 
   borrarHorarioFavorito(token: string, id: number) {
-    this.rutasService.deleteRutaFavorita(token, id).subscribe(
+    this.rutasService.deleteRutaFavorita(token, id).then(
       () => {
 
+      }, error => {
+        console.log(error)
       }
     );
   }

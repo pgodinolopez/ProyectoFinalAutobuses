@@ -28,7 +28,8 @@ export class RutasService {
   url_información_lineas = this.url_base + '/lineas/';
   horario: Horario;
   // url_base_api_rest = 'http://127.0.0.1:8000/api/v1';
-  url_base_api_rest = 'http://192.168.0.161:8000/api/v1';
+  // url_base_api_rest = 'http://192.168.0.161:8000/api/v1';
+  url_base_api_rest = 'http://busapp-crta.000webhostapp.com/public/index.php/api/v1';
   url_rutas_favoritas = this.url_base_api_rest + '/rutas_favoritas';
   url_api_directions = 'https://maps.googleapis.com/maps/api/directions/json?';
 
@@ -85,16 +86,46 @@ export class RutasService {
   }
 
   getRutasFavoritas(token: string) {
-    return this.http.get<Horario[]>(this.url_rutas_favoritas, {headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token}});
+    this.http_advanced.setSSLCertMode('nocheck');
+    this.http_advanced.setHeader('*', 'Access-Control-Allow-Origin' , '*');
+    this.http_advanced.setHeader('*', 'Access-Control-Allow-Methods', 'POST, GET, OPTIONS, PUT');
+    this.http_advanced.setHeader('*', 'Accept','application/json');
+    this.http_advanced.setHeader('*', 'Authorization','Bearer ' + token);
+    this.http_advanced.setHeader('*', 'content-type','application/json');
+    this.http_advanced.setDataSerializer('json');
+    return this.http_advanced.get(this.url_rutas_favoritas, {}, {});
   }
 
   postRutaFavorita(token: string, horario: Horario) {
-    console.log(token)
-    return this.http.post<Horario>(this.url_rutas_favoritas, horario, {headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token}});
+    this.http_advanced.setSSLCertMode('nocheck');
+    this.http_advanced.setHeader('*', 'Access-Control-Allow-Origin' , '*');
+    this.http_advanced.setHeader('*', 'Access-Control-Allow-Methods', 'POST, GET, OPTIONS, PUT');
+    this.http_advanced.setHeader('*', 'Accept','application/json');
+    this.http_advanced.setHeader('*', 'Authorization','Bearer ' + token);
+    this.http_advanced.setHeader('*', 'content-type','application/json');
+    this.http_advanced.setDataSerializer('json');
+    return this.http_advanced.post(this.url_rutas_favoritas, horario, {});
   }
 
+  // deleteRutaFavorita(token: string, id: number) {
+  //   this.http_advanced.setSSLCertMode('nocheck');
+  //   this.http_advanced.setHeader('*', 'Access-Control-Allow-Origin' , '*');
+  //   this.http_advanced.setHeader('*', 'Access-Control-Allow-Methods', 'POST, GET, OPTIONS, PUT, DELETE');
+  //   this.http_advanced.setHeader('*', 'Authorization','Bearer ' + token);
+  //   this.http_advanced.setDataSerializer('json');
+  //   return this.http_advanced.delete(this.url_rutas_favoritas + '/' + id, {}, {});
+  // }
+
+  // 000webhost no permite métodos DELETE
+
   deleteRutaFavorita(token: string, id: number) {
-    return this.http.delete(this.url_rutas_favoritas + '/' + id, {headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token}});
+    this.http_advanced.setSSLCertMode('nocheck');
+    this.http_advanced.setHeader('*', 'Access-Control-Allow-Origin' , '*');
+    this.http_advanced.setHeader('*', 'Access-Control-Allow-Methods', 'POST, GET, OPTIONS, PUT');
+    this.http_advanced.setHeader('*', 'Accept','application/json');
+    this.http_advanced.setHeader('*', 'Authorization','Bearer ' + token);
+    this.http_advanced.setDataSerializer('json');
+    return this.http_advanced.post(this.url_rutas_favoritas + '/' + id, {}, {});
   }
 
   getPolylineDirectionsApi(latitudOrigen: number, longitudOrigen: number, latitudDestino: number, longitudDestino: number) {
