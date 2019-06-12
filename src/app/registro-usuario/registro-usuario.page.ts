@@ -28,20 +28,10 @@ export class RegistroUsuarioPage implements OnInit {
     } else if (!regextlfn.test(this.usuario._telefono)) {
       this.mostrarToastTelefono();
     } else {
-      // this.notificacionesFirebaseService.getToken().then(token=>{
-        // this.usuario._token_dispositivo = token;
         this.usuario._token_dispositivo = 'aaaaa';
-        // console.log(this.usuario._token_dispositivo);
-        // this.mostrarToastFire();
         this.autenticationService.registrarUsuario(this.usuario);
-      // });
-      
-      
-      // this.notificacionesFirebaseService.getToken(this.usuario.id);
-      this.router.navigate(['/tabs/login']);
+        this.router.navigate(['/tabs/login']);
     }
-    
-
   }
   
   mostrarToastFire() {

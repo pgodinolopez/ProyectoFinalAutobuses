@@ -1,17 +1,14 @@
-import { Component, OnInit, ViewChild, ElementRef, NgZone } from '@angular/core';
+import { Component } from '@angular/core';
 import {
   GoogleMaps,
-  GoogleMap,
   GoogleMapsEvent,
   LatLng,
   MarkerOptions,
-  Marker,
-  MarkerCluster
 } from "@ionic-native/google-maps";
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 
 
-import { Platform, NavController, LoadingController, ActionSheetController } from "@ionic/angular";
+import { Platform, NavController, ActionSheetController } from "@ionic/angular";
 import { ParadasService } from '../servicios/paradas.service';
 import { Parada } from '../modelos/parada';
 import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
@@ -37,7 +34,7 @@ export class ParadasCercanasPage {
 
   constructor(public platform: Platform, public nav: NavController, private paradasService: ParadasService,
      public geolocation: Geolocation, private androidPermissions: AndroidPermissions,
-     private loadingController: LoadingController, private actionSheetController: ActionSheetController,
+     private actionSheetController: ActionSheetController,
      private router: Router, private storage: Storage) {
     this.listaParadas = [];
   }
@@ -79,7 +76,6 @@ export class ParadasCercanasPage {
     this.platform.ready().then( () => {
       this.obtenerParadas().then(
         ()=>{
-          // this.obtenerPosicionActual();
         }
       );
 			
@@ -104,7 +100,7 @@ export class ParadasCercanasPage {
           
           
         } else {
-          //If having permission show 'Turn On GPS' dialogue
+          //Si no tenemos permiso mostramos un diálogo que le pide activar el GPS
           this.androidPermissions.requestPermission(this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION).then(
            () => {
             this.geolocation.getCurrentPosition().then((position) =>  {
@@ -120,8 +116,6 @@ export class ParadasCercanasPage {
 
            }
           )
-          //If not having permission ask for permission
-          // this.requestGPSPermission();
         }
       },
       err => this.androidPermissions.requestPermission(this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION)

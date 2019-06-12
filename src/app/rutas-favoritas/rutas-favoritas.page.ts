@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { RutasService } from '../servicios/rutas.service';
-import { AutenticacionService } from '../servicios/autenticacion.service';
 import { Router } from '@angular/router';
 import { ToastController, ActionSheetController } from '@ionic/angular';
 import { Horario } from '../modelos/horario';

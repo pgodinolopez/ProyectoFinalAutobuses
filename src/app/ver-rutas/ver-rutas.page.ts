@@ -2,11 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { Horario } from '../modelos/horario';
 import { RutasService } from '../servicios/rutas.service';
 import { Linea } from '../modelos/linea';
-import { Municipio } from '../modelos/municipio';
 import { Nucleo } from '../modelos/nucleo';
-import { Bloque } from '../modelos/bloque';
 import { ToastController, ActionSheetController } from '@ionic/angular';
-import { format, subDays, parse, parseISO, toDate } from 'date-fns'
+import { format } from 'date-fns'
 import { Router } from '@angular/router';
 import { Storage } from '@ionic/storage';
 
@@ -21,21 +19,15 @@ export class VerRutasPage implements OnInit {
     'token': '',
     'valido': false,
   };
-  municipios: Municipio[];
   nucleos: Nucleo[];
   nucleoOrigen: Nucleo;
   nucleoDestino: Nucleo;
   horarios: Horario[];
   origen: string = '';
   destino: string = '';
-  linea: Linea;
-  bloques: Bloque[];
-  orden: number;
-  operadores: string;
   toast: any;
   modo_autobus: boolean;
   fecha_seleccionada: any;
-  dia_final: string;
   lista_horarios_final: Horario[];
   adaptado_movilidad_reducida: boolean;
   lineaObtenida: Linea;
@@ -45,12 +37,13 @@ export class VerRutasPage implements OnInit {
   
   filtrosExpandidos: boolean = false;
 
-  constructor(private rutasService: RutasService, public toastController: ToastController, private router: Router, private storage: Storage, private actionSheetController: ActionSheetController) { 
+  constructor(private rutasService: RutasService, public toastController: ToastController, private router: Router,
+    private storage: Storage, private actionSheetController: ActionSheetController) { 
+    
     this.adaptado_movilidad_reducida = false;
   }
 
   ngOnInit() {
-    // this.obtenerMunicipios();
     this.obtenerNucleos();
     
   }
@@ -73,7 +66,6 @@ export class VerRutasPage implements OnInit {
     let dia_semana = format(fecha, "iiii"); 
     this.rutasService.getHorarios(this.nucleoDestino.idNucleo, this.nucleoOrigen.idNucleo).subscribe(
       (horarios)=>{
-        
         this.horarios = horarios['horario'];
         this.horarios.forEach(horario => {
           if (horario.dias=="L-V" && (dia_semana == "Monday" || dia_semana == "Tuesday" || dia_semana == "Wednesday" || dia_semana == "Thursday" || dia_semana == "Friday")) {
@@ -107,7 +99,6 @@ export class VerRutasPage implements OnInit {
           this.mostrarToast('No se han encontrado resultados.')
         } 
       });
-      
   }
 
   buscarRutas() {
@@ -174,18 +165,12 @@ export class VerRutasPage implements OnInit {
   }
 
   obtenerDatosHorarioPorLinea(horario: Horario, linea: Linea) {
-    // this.obtenerInformacionLineas(parseInt(horario.idlinea), horario);
-
-
 
     if (linea.pmr === 'Adaptada a personas con movilidad reducida') {
       horario.pmr = true;
     } else {
       horario.pmr = false;
     }
-
-    // this.obtenerBloquesLinea(parseInt(horario.idlinea));
-    // this.orden = this.bloques.find(i => i.idLinea === parseInt(horario.idlinea)).orden;
     
     horario.hora_salida = horario.horas[0];
     if (horario.hora_salida === '--') {
@@ -222,7 +207,6 @@ export class VerRutasPage implements OnInit {
       
       horario.precio_billete_sencillo = this.precio_billete_sencillo;
       horario.precio_tarjeta = this.precio_tarjeta;
-      // this.obtenerPrecio(this.nucleoDestino.idNucleo, this.nucleoOrigen.idNucleo, horario);
       if (this.adaptado_movilidad_reducida == true && horario.pmr) {
         this.lista_horarios_final.push(horario);
       } else if (!this.adaptado_movilidad_reducida) {
@@ -254,13 +238,10 @@ export class VerRutasPage implements OnInit {
      
       }
 
-      
-
     } else {
 
       horario.precio_billete_sencillo = this.precio_billete_sencillo;
       horario.precio_tarjeta = this.precio_tarjeta;
-      // this.obtenerPrecio(this.nucleoDestino.idNucleo, this.nucleoOrigen.idNucleo, horario);
       if (this.adaptado_movilidad_reducida == true && horario.pmr) {
         this.lista_horarios_final.push(horario);
       } else if (!this.adaptado_movilidad_reducida) {
@@ -290,7 +271,6 @@ export class VerRutasPage implements OnInit {
         return 0;
       });
      
-    // horario.operadores = this.operadores;  
     }
   }
 
